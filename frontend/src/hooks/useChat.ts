@@ -54,20 +54,22 @@ export function useChat() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const e = err as any;
         if (e.response) {
-          // Axios error with a response from the server
           const data = e.response.data;
-          const detail = data?.detail ?? data?.message ?? data?.error;
-          if (typeof detail === 'string') {
-            msg = detail;
-          } else if (typeof detail === 'object') {
-            msg = JSON.stringify(detail);
-          } else if (typeof data === 'string') {
-            msg = data;
+          // Never show raw HTML (e.g. Netlify 404 page) — treat as unreachable backend
+          const isHtml = typeof data === 'string' && data.trimStart().startsWith('<');
+          if (isHtml) {
+            msg = 'Backend not reachable. Run server.bat and enable Local Backend in Settings.';
           } else {
-            msg = `Server error (HTTP ${e.response.status})`;
+            const detail = data?.detail ?? data?.message ?? data?.error;
+            if (typeof detail === 'string') {
+              msg = detail;
+            } else if (typeof detail === 'object') {
+              msg = JSON.stringify(detail);
+            } else {
+              msg = `Server error (HTTP ${e.response.status})`;
+            }
           }
         } else if (e.message) {
-          // Network error, timeout, etc.
           msg = e.message;
         }
       }

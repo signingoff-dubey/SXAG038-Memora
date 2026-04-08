@@ -7,11 +7,12 @@
   NODE_VERSION = "20"
 
 [[redirects]]
-  # Return 404 for /api/* so the browser gets a real error (not HTML),
-  # which lets Axios throw and the frontend catch blocks handle it cleanly.
+  # Return 404 for /api/* so Axios throws and catch blocks handle it.
+  # Force = false so a real backend (proxied) can still respond first.
   from = "/api/*"
-  to = "/404.html"
+  to = "/api-not-found"
   status = 404
+  force = false
 
 [[redirects]]
   # SPA fallback — all non-file, non-api routes serve index.html
