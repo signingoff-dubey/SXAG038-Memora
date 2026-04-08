@@ -16,22 +16,25 @@ export function useWebSocket(userId: string = 'default') {
 
   const connect = useCallback(() => {
     if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // In production, use VITE_API_URL to derive the WS host. 
-    // Example: VITE_API_URL="https://backend.com" -> wss://backend.com/ws/memories
-    let wsHost = window.location.host;
-    let apiUrl = (import.meta as any).env.VITE_API_URL;
-    
-    if (apiUrl && typeof apiUrl === 'string') {
-      // Remove trailing slash if present
-      apiUrl = apiUrl.replace(/\/$/, '');
-      // Remove protocol if present
-      if (apiUrl.startsWith('http')) {
-        wsHost = apiUrl.replace(/^https?:\/\//, '');
+
+    const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+    let wsUrl: string;
+
+    if (isLocal) {
+      wsUrl = `ws://127.0.0.1:8000/ws/memories?user_id=${encodeURIComponent(userId)}`;
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      let wsHost = window.location.host;
+      let apiUrl = (import.meta as any).env.VITE_API_URL;
+      if (apiUrl && typeof apiUrl === 'string') {
+        apiUrl = apiUrl.replace(/\/$/, '');
+        if (apiUrl.startsWith('http')) {
+          wsHost = apiUrl.replace(/^https?:\/\//, '');
+        }
       }
+      wsUrl = `${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`;
     }
 
-    const wsUrl = `${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`;
     console.log('[WebSocket] Connecting to:', wsUrl);
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
