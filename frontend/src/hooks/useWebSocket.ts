@@ -17,16 +17,23 @@ export function useWebSocket(userId: string = 'default') {
   const connect = useCallback(() => {
     if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    
     // In production, use VITE_API_URL to derive the WS host. 
     // Example: VITE_API_URL="https://backend.com" -> wss://backend.com/ws/memories
     let wsHost = window.location.host;
-    const apiUrl = (import.meta as any).env.VITE_API_URL;
-    if (apiUrl && apiUrl.startsWith('http')) {
-      wsHost = apiUrl.replace(/^https?:\/\//, '');
+    let apiUrl = (import.meta as any).env.VITE_API_URL;
+    
+    if (apiUrl && typeof apiUrl === 'string') {
+      // Remove trailing slash if present
+      apiUrl = apiUrl.replace(/\/$/, '');
+      // Remove protocol if present
+      if (apiUrl.startsWith('http')) {
+        wsHost = apiUrl.replace(/^https?:\/\//, '');
+      }
     }
 
-    const ws = new WebSocket(`${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`);
+    const wsUrl = `${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`;
+    console.log('[WebSocket] Connecting to:', wsUrl);
+    const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => { console.log('WebSocket connected'); };

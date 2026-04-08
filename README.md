@@ -7,6 +7,16 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 ## Release Notes
 
 ### v4.0
+#### ☁️ Hybrid Mode (Cloud UI + Local AI)
+
+You can use the beautiful hosted interface while keeping your data and AI processing on your local machine:
+
+1.  **Launch Brain**: Run [**server.bat**](server.bat) on your computer.
+2.  **Access UI**: Visit [**memora-kabir.netlify.app**](https://memora-kabir.netlify.app).
+3.  **Automatic Sync**: The UI will detect your local server (indicated by a green 🟢 badge) and immediately start using your system's GPU and memories.
+
+This gives you the best of both worlds: a premium cloud experience with 100% local privacy and power.
+
 - One-Click Automated Startup: run.bat now starts Ollama, Backend, and Frontend, and automatically opens browser tabs for both the app and API documentation.
 - Ollama integration: ollama serve is started automatically by the startup script if Ollama is installed.
 - Security enhancements: added authentication middleware, per-memory authorization checks, rate limiting, prompt-injection mitigation, per-user WebSocket scoping.
