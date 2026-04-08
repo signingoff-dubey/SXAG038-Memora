@@ -338,3 +338,1110 @@ fastapi.exceptions.ResponseValidationError: 3 validation errors:
   {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
   {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 9, 180107)}
 
+INFO:     127.0.0.1:41800 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:6385 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     connection closed
+INFO:     ('127.0.0.1', 47584) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 19033) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+INFO:     ('127.0.0.1', 22594) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 33 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 9, 180107)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 425979)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 17, 53, 491787)}
+
+INFO:     ('127.0.0.1', 20122) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 55238) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+INFO:     ('127.0.0.1', 56816) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:49862 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 33 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 9, 180107)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 425979)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 46673)}
+
+INFO:     127.0.0.1:40414 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 33 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 9, 180107)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 425979)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 44, 14, 746253)}
+
+INFO:     127.0.0.1:49864 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40421 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 52400) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:34071 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:12820 - "POST /api/chat HTTP/1.1" 200 OK
+C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\huggingface_hub\file_download.py:143: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\kabir\.cache\huggingface\hub\models--cross-encoder--nli-deberta-v3-small. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-7, started daemon 12268)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\module.py:510: SAWarning: The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-7, started daemon 12268)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+  super().__setattr__("_backward_hooks", OrderedDict())
+The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-6, started daemon 35756)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\module.py:510: SAWarning: The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-6, started daemon 35756)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+  super().__setattr__("_backward_hooks", OrderedDict())
+The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-5, started daemon 40308)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\module.py:510: SAWarning: The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-5, started daemon 40308)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+  super().__setattr__("_backward_hooks", OrderedDict())
+The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-8, started daemon 42232)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\module.py:510: SAWarning: The garbage collector is trying to clean up non-checked-in connection <AdaptedConnection <Connection(Thread-8, started daemon 42232)>>, which will be dropped, as it cannot be safely terminated.  Please ensure that SQLAlchemy pooled connections are returned to the pool explicitly, either by calling ``close()`` or by using appropriate context managers to manage their lifecycle.
+  super().__setattr__("_backward_hooks", OrderedDict())
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+INFO:     127.0.0.1:15887 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:28253 - "PATCH /api/memories/5ed0a2e0-a77a-47c6-ae5b-efdb741a054e HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 58, 22, 332369)}
+
+INFO:     127.0.0.1:25948 - "PATCH /api/memories/5ed0a2e0-a77a-47c6-ae5b-efdb741a054e HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 58, 24, 64898)}
+
+INFO:     127.0.0.1:44903 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61164 - "PATCH /api/memories/8aca0342-dd20-4efd-a29e-1cadba5c5353 HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 52, 16, 382896)}
+
+INFO:     127.0.0.1:27551 - "PATCH /api/memories/87c98b52-84a2-4f11-8498-6261106cd77f HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 52, 19, 155516)}
+
+INFO:     127.0.0.1:21706 - "PATCH /api/memories/87c98b52-84a2-4f11-8498-6261106cd77f HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 52, 20, 815096)}
+
+INFO:     127.0.0.1:10950 - "PATCH /api/memories/8aca0342-dd20-4efd-a29e-1cadba5c5353 HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 3 validation errors:
+  {'type': 'string_type', 'loc': ('response', 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 52, 22, 891350)}
+
+INFO:     127.0.0.1:54923 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:27570 - "POST /api/chat HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'services\llm.py'. Reloading...
+ INFO:     127.0.0.1:26100 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 51 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 6, 355401)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 726607)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 11, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 11, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 11, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 12, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 12, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 12, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 13, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 13, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 13, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 14, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 14, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 14, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+  {'type': 'string_type', 'loc': ('response', 15, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 15, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 15, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 727855)}
+  {'type': 'string_type', 'loc': ('response', 16, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 16, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 16, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 11, 22, 226313)}
+
+INFO:     connection closed
+INFO:     connection closed
+INFO:     127.0.0.1:49672 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 51 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 6, 355401)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 726607)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 11, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 11, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 11, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 12, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 12, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 12, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 13, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 13, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 13, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 14, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 14, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 14, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+  {'type': 'string_type', 'loc': ('response', 15, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 15, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 15, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 727855)}
+  {'type': 'string_type', 'loc': ('response', 16, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 16, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 16, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 12492)}
+
+INFO:     ('127.0.0.1', 47736) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:47738 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 51 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 6, 355401)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 726607)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 11, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 11, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 11, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 12, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 12, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 12, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 13, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 13, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 13, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 14, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 14, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 14, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+  {'type': 'string_type', 'loc': ('response', 15, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 15, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 15, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 727855)}
+  {'type': 'string_type', 'loc': ('response', 16, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 16, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 16, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 16, 333525)}
+
+INFO:     127.0.0.1:49674 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36462 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 25237) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+INFO:     ('127.0.0.1', 16614) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:42989 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 51 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 6, 355401)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 726607)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 11, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 11, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 11, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 12, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 12, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 12, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 13, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 13, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 13, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 14, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 14, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 14, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+  {'type': 'string_type', 'loc': ('response', 15, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 15, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 15, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 727855)}
+  {'type': 'string_type', 'loc': ('response', 16, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 16, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 16, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 653777)}
+
+INFO:     127.0.0.1:16617 - "GET /api/memories?user_id=default HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kabir\AppData\Local\Programs\Python\Python312\Lib\site-packages\fastapi\routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 51 validation errors:
+  {'type': 'string_type', 'loc': ('response', 0, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 23, 16038)}
+  {'type': 'string_type', 'loc': ('response', 0, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 1, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 22, 191400)}
+  {'type': 'string_type', 'loc': ('response', 1, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 2, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 21, 278125)}
+  {'type': 'string_type', 'loc': ('response', 2, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 3, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 12, 794220)}
+  {'type': 'string_type', 'loc': ('response', 3, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 4, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 11, 695799)}
+  {'type': 'string_type', 'loc': ('response', 4, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 4, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 5, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 10, 556496)}
+  {'type': 'string_type', 'loc': ('response', 5, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 5, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 6, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 3, 415292)}
+  {'type': 'string_type', 'loc': ('response', 6, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 45, 6, 355401)}
+  {'type': 'string_type', 'loc': ('response', 6, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 7, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 2, 2, 18083)}
+  {'type': 'string_type', 'loc': ('response', 7, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 7, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 726607)}
+  {'type': 'string_type', 'loc': ('response', 8, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 37, 566681)}
+  {'type': 'string_type', 'loc': ('response', 8, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 14, 51, 22, 829896)}
+  {'type': 'string_type', 'loc': ('response', 8, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 9, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 36, 198484)}
+  {'type': 'string_type', 'loc': ('response', 9, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 10, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 34, 814219)}
+  {'type': 'string_type', 'loc': ('response', 10, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 53, 422913)}
+  {'type': 'string_type', 'loc': ('response', 10, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 11, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 16, 493715)}
+  {'type': 'string_type', 'loc': ('response', 11, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 11, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 12, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 15, 113616)}
+  {'type': 'string_type', 'loc': ('response', 12, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 12, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 13, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 56, 29, 495938)}
+  {'type': 'string_type', 'loc': ('response', 13, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 9, 91285)}
+  {'type': 'string_type', 'loc': ('response', 13, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 14, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 54, 379835)}
+  {'type': 'string_type', 'loc': ('response', 14, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 13, 1, 25, 597955)}
+  {'type': 'string_type', 'loc': ('response', 14, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+  {'type': 'string_type', 'loc': ('response', 15, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 12, 49, 23, 168726)}
+  {'type': 'string_type', 'loc': ('response', 15, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 15, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 727855)}
+  {'type': 'string_type', 'loc': ('response', 16, 'created_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 9, 50, 11, 12259)}
+  {'type': 'string_type', 'loc': ('response', 16, 'last_accessed_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 15, 53, 8, 720981)}
+  {'type': 'string_type', 'loc': ('response', 16, 'updated_at'), 'msg': 'Input should be a valid string', 'input': datetime.datetime(2026, 4, 8, 16, 14, 48, 665092)}
+
+INFO:     127.0.0.1:60453 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:16620 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 57782) - "WebSocket /ws/memories" [accepted]
+INFO:     connection open

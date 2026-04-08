@@ -67,6 +67,12 @@ async def update_memory(memory_id: str, update: MemoryUpdate, db: AsyncSession =
         if update.is_flagged_unimportant:
             memory.is_pinned = False
 
+    if update.importance is not None:
+        memory.importance = max(1.0, min(10.0, update.importance))
+
+    if update.is_session_only is not None:
+        memory.is_session_only = update.is_session_only
+
     if update.content is not None and update.content != memory.content:
         memory.content = update.content
         memory.updated_at = _utcnow()

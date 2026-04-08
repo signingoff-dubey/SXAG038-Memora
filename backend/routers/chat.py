@@ -83,6 +83,18 @@ async def chat(
         images=request.images or None,
     )
 
+    # ── 5. RAG verification pass (only when memories exist + no images) ────────
+    # Checks the response against retrieved memories and self-corrects if needed.
+    if memories and not request.images:
+        memory_texts = [m["content"] for m in memories]
+        response_text = await llm.verify_response_against_memories(
+            response_text,
+            memory_texts,
+            model=model,
+            custom_base_url=request.custom_base_url,
+            custom_api_key=request.custom_api_key,
+        )
+
     # ── 5. Persist memories in background ────────────────────────────────────
     background_tasks.add_task(
         write_pipeline,
