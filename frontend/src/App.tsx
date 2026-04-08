@@ -6,7 +6,8 @@ import { ChatHistory } from './components/Layout/ChatHistory';
 import { SettingsModal } from './components/Layout/SettingsModal';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useMemoryStore } from './store/memoryStore';
-import { modelsApi } from './api/client';
+import { modelsApi, contextApi } from './api/client';
+import axios from 'axios';
 import { Brain, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
   useEffect(() => {
     // 1. Ensure there's always an active session
     if (!activeSessionId) {
-      if (sessions.length > 0) {
+      if (sessions && Array.isArray(sessions) && sessions.length > 0) {
         const sorted = [...sessions].sort((a, b) => b.lastUpdated - a.lastUpdated);
         loadSession(sorted[0].id);
       } else {
@@ -57,6 +58,24 @@ function App() {
       // Ollama might not be running — that's fine, keep the stored model
     });
   }, [customConfig, selectedModel, setInstalledModels, setSelectedModel]);
+
+  // ── 3. Auto-detect local backend ──────────────────────────────────────────
+  const setLocalBackendActive = useMemoryStore(s => s.setLocalBackendActive);
+  useEffect(() => {
+    const detectLocal = async () => {
+      try {
+        // Try a direct ping to the local backend port
+        await axios.get('http://127.0.0.1:8000/api/health', { timeout: 1500 });
+        console.log("🌐 Local backend detected! Switching to Local Mode.");
+        setLocalBackendActive(true);
+      } catch (e) {
+        // If it fails, we fall back to the cloud/Vite proxy
+        console.log("☁️ Local backend not found. Using Cloud/Default mode.");
+        setLocalBackendActive(false);
+      }
+    };
+    detectLocal();
+  }, [setLocalBackendActive]);
 
   useWebSocket();
 
@@ -109,8 +128,18 @@ function App() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-2">
+          {/* Local mode badge */}
+          {useMemoryStore.getState().localBackendActive && (
+            <div 
+              className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-500 border border-green-500/20"
+              title="Connected to direct local server (server.bat)"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              Local Server
+            </div>
+          )}
+
           {/* User profile indicator */}
-          {userProfile && (
             <span
               className="hidden sm:flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg"
               style={{
@@ -120,9 +149,10 @@ function App() {
               }}
             >
               <span>👤</span>
-              <span className="max-w-[120px] truncate">{userProfile.split('\n')[0].slice(0, 30)}</span>
+              <span className="max-w-[120px] truncate">
+                {typeof userProfile === 'string' ? userProfile.split('\n')[0].slice(0, 30) : 'User'}
+              </span>
             </span>
-          )}
 
           {/* Settings button */}
           <button

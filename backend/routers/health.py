@@ -13,17 +13,29 @@ router = APIRouter(prefix="/api", tags=["health"])
 @router.get("/health")
 async def health():
     ollama_ok = False
+    error_detail = None
     try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
+        async with httpx.AsyncClient(timeout=3.0) as client:
             resp = await client.get(f"{settings.ollama_base_url}/api/tags")
             ollama_ok = resp.status_code == 200
+            if not ollama_ok:
+                error_detail = f"Ollama returned status {resp.status_code}"
+    except httpx.ConnectError:
+        error_detail = "Connection refused — is Ollama running and (if cloud) is the tunnel open?"
+    except httpx.TimeoutException:
+        error_detail = "Connection timed out — check your network or tunnel."
     except Exception as e:
+        error_detail = str(e)
         logger.warning(f"Health check failed to connect to Ollama: {e}")
 
     return {
         "status": "ok",
-        "ollama": "connected" if ollama_ok else "disconnected",
-        "model": settings.ollama_model,
+        "ollama": {
+            "connected": ollama_ok,
+            "error": error_detail,
+            "base_url": settings.ollama_base_url,
+            "model": settings.ollama_model
+        }
     }
 
 

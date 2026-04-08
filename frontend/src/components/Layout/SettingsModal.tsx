@@ -7,7 +7,7 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
-type Tab = 'profile' | 'analytics';
+type Tab = 'profile' | 'analytics' | 'system';
 
 export function SettingsModal({ onClose }: SettingsModalProps) {
   const { userProfile, setUserProfile, clearAllHistory, memories } = useMemoryStore();
@@ -30,6 +30,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [draft, setDraft]       = useState(userProfile);
   const [saving, setSaving]     = useState(false);
   const [status, setStatus]     = useState<'idle' | 'saved' | 'error'>('idle');
+  const [healthStatus, setHealthStatus] = useState<any>(null);
+  const [checkingHealth, setCheckingHealth] = useState(false);
   const textareaRef             = useRef<HTMLTextAreaElement>(null);
 
   // Focus textarea on open
@@ -59,6 +61,24 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
       setSaving(false);
     }
   };
+
+  const checkConnectivity = async () => {
+    setCheckingHealth(true);
+    try {
+      // Use the base axios instance to hit /api/health
+      const resp = await contextApi.getHealth(); 
+      setHealthStatus(resp.data);
+    } catch (e: any) {
+      setHealthStatus({ error: e.message || 'Failed to reach backend' });
+    } finally {
+      setCheckingHealth(false);
+    }
+  };
+
+  // Check health on system tab open
+  useEffect(() => {
+    if (activeTab === 'system') checkConnectivity();
+  }, [activeTab]);
 
   const hasChanges = draft !== userProfile;
 
@@ -91,18 +111,18 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               className="flex rounded-xl overflow-hidden nm-inset"
               style={{ padding: 3 }}
             >
-              {(['profile', 'analytics'] as Tab[]).map((tab) => (
+              {(['profile', 'analytics', 'system'] as Tab[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize"
                   style={{
                     background: activeTab === tab ? 'var(--accent)' : 'transparent',
                     color: activeTab === tab ? '#fff' : 'var(--text-muted)',
                   }}
                 >
-                  {tab === 'profile' ? <User size={11} /> : <BarChart2 size={11} />}
-                  {tab === 'profile' ? 'Profile' : 'Analytics'}
+                  {tab === 'profile' ? <User size={11} /> : tab === 'analytics' ? <BarChart2 size={11} /> : <AlertCircle size={11} />}
+                  {tab}
                 </button>
               ))}
             </div>
@@ -112,62 +132,79 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           </div>
         </div>
 
-        {/* ── Analytics Tab ── */}
-        {activeTab === 'analytics' && (
-          <div className="px-6 py-5 space-y-4">
-            {/* Stats grid */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Total',       value: totalMemories, color: 'var(--accent)' },
-                { label: 'Pinned',      value: pinned,        color: 'var(--success)' },
-                { label: 'Conflicts',   value: conflicts,     color: 'var(--danger)' },
-                { label: 'Session-only',value: sessionOnly,   color: 'var(--warning)' },
-                { label: 'Avg importance', value: avgImportance, color: 'var(--text-primary)' },
-                { label: 'Avg health',  value: `${avgDecay}%`,color: 'var(--text-primary)' },
-              ].map(({ label, value, color }) => (
-                <div
-                  key={label}
-                  className="rounded-xl p-3 nm-card text-center"
-                >
-                  <div className="text-lg font-bold tabular-nums" style={{ color }}>{value}</div>
-                  <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{label}</div>
+        {/* ── System Tab ── */}
+        {activeTab === 'system' && (
+          <div className="px-6 py-5 space-y-5">
+            <div>
+              <p className="text-xs font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
+                📡 Connectivity Diagnostics
+              </p>
+              
+              <div className="space-y-3">
+                {/* Backend Status */}
+                <div className="flex items-center justify-between p-3 rounded-xl nm-inset">
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Cloud Backend</span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-green-500">
+                    <CheckCircle2 size={12} /> Connected
+                  </span>
                 </div>
-              ))}
+
+                {/* Ollama Status */}
+                <div className="p-3 rounded-xl nm-inset space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Ollama Node</span>
+                    {checkingHealth ? (
+                      <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+                    ) : healthStatus?.ollama?.connected ? (
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--success)' }}>
+                        <CheckCircle2 size={12} /> Reachable
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--danger)' }}>
+                        <AlertCircle size={12} /> Offline
+                      </span>
+                    )}
+                  </div>
+                  
+                  {healthStatus?.ollama?.error && (
+                    <p className="text-[10px] leading-relaxed" style={{ color: 'var(--danger)' }}>
+                      {healthStatus.ollama.error}
+                    </p>
+                  )}
+
+                  <div className="pt-1 flex items-center justify-between opacity-60">
+                    <span className="text-[9px] font-mono tabular-nums">{healthStatus?.ollama?.base_url || 'Checking...'}</span>
+                    <button 
+                      onClick={checkConnectivity}
+                      disabled={checkingHealth}
+                      className="text-[9px] font-bold hover:underline"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Top memories by importance */}
-            {topMemories.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                  🧠 Top memories by importance
-                </p>
-                <div className="space-y-2">
-                  {topMemories.map((m) => (
-                    <div
-                      key={m.id}
-                      className="flex items-start gap-2 px-3 py-2 rounded-xl"
-                      style={{ background: 'var(--bg-tertiary)' }}
-                    >
-                      <span
-                        className="text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5"
-                        style={{ background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }}
-                      >
-                        {m.importance.toFixed(0)}★
-                      </span>
-                      <p className="text-xs leading-snug" style={{ color: 'var(--text-primary)' }}>
-                        {m.content.length > 80 ? m.content.slice(0, 80) + '…' : m.content}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+            {/* Cloud Sync Help */}
+            <div className="rounded-xl p-4 space-y-3" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
+              <div className="flex items-center gap-2">
+                <AlertCircle size={14} style={{ color: 'var(--warning)' }} />
+                <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Using Local Models with Netlify?</span>
               </div>
-            )}
-
-            {totalMemories === 0 && (
-              <div className="text-center py-8 opacity-40">
-                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No memories yet — start chatting!</p>
-              </div>
-            )}
+              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                Netlify servers cannot see your laptop's <code>localhost</code>. To use your system's GPU from the cloud, you must use a tunnel like <strong>Ngrok</strong>.
+              </p>
+              <a 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); alert("Open CLOUD_SYNC_GUIDE.md in your project root for step-by-step instructions!"); }}
+                className="inline-block text-[11px] font-bold hover:underline"
+                style={{ color: 'var(--accent)' }}
+              >
+                Read Cloud Sync Guide →
+              </a>
+            </div>
           </div>
         )}
 

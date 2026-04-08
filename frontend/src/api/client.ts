@@ -1,11 +1,20 @@
 import axios from 'axios';
-
-// Configure the API base URL. 
-// In development, it defaults to '/api' (proxied via Vite).
-// In production (Netlify), it can be overridden by the VITE_API_URL environment variable.
 const api = axios.create({
   baseURL: (import.meta as any).env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
+});
+
+// Interceptor to switch to localhost if "localBackendActive" is found in localStorage
+api.interceptors.request.use((config) => {
+  const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+  const prodUrl = (import.meta as any).env.VITE_API_URL || '/api';
+  
+  if (isLocal) {
+    config.baseURL = 'http://127.0.0.1:8000/api';
+  } else {
+    config.baseURL = prodUrl;
+  }
+  return config;
 });
 
 export interface ChatRequest {
@@ -84,6 +93,7 @@ export const contextApi = {
     api.get<UserContext>(`/context?user_id=${userId}`),
   save: (userId: string, userProfile: string) =>
     api.post<UserContext>('/context', { user_id: userId, user_profile: userProfile }),
+  getHealth: () => api.get('/health'),
 };
 
 export default api;

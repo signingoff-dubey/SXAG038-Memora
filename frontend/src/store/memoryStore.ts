@@ -29,7 +29,9 @@ const LS = {
   get: <T>(key: string, fallback: T): T => {
     try {
       const v = localStorage.getItem(key);
-      return v ? (JSON.parse(v) as T) : fallback;
+      if (!v) return fallback;
+      const parsed = JSON.parse(v);
+      return (parsed === null || parsed === undefined) ? fallback : (parsed as T);
     } catch {
       return fallback;
     }
@@ -53,6 +55,7 @@ const CUSTOM_CFG_KEY  = 'memora-custom-cfg';
 const THEME_KEY       = 'memora-theme';
 const HISTORY_KEY     = 'memora-history-open';
 const PROFILE_KEY     = 'memora-user-profile';
+const LOCAL_BA_KEY    = 'memora-local-backend';
 
 function msgsKey(sessionId: string) {
   return MSGS_PREFIX + sessionId;
@@ -77,6 +80,7 @@ interface MemoryStore {
   // UI
   theme: 'light' | 'dark';
   historyOpen: boolean;
+  localBackendActive: boolean;
 
   // Memories (from backend)
   memories: MemoryData[];
@@ -110,6 +114,9 @@ interface MemoryStore {
   // History panel
   toggleHistory: () => void;
 
+  // Local backend
+  setLocalBackendActive: (active: boolean) => void;
+
   // Memories
   setMemories: (memories: MemoryData[]) => void;
   addMemory: (memory: MemoryData) => void;
@@ -132,13 +139,17 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
 
   theme: LS.get<'light' | 'dark'>(THEME_KEY, 'dark'),
   historyOpen: LS.get<boolean>(HISTORY_KEY, true),
+  localBackendActive: LS.get<boolean>(LOCAL_BA_KEY, false),
 
   memories: [],
 
   // ── Sessions ─────────────────────────────────────────────────────────────
 
   createSession: () => {
-    const id = crypto.randomUUID();
+    // Fallback for non-secure contexts (HTTP) where crypto.randomUUID isn't available
+    const id = typeof crypto.randomUUID === 'function' 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const session: ChatSession = {
       id,
       title: 'New chat',
@@ -232,7 +243,9 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     // Clear the session index
     LS.set(SESSIONS_KEY, []);
     // Create a fresh blank session immediately so the UI stays usable
-    const id = crypto.randomUUID();
+    const id = typeof crypto.randomUUID === 'function' 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const fresh = {
       id,
       title: 'New chat',
@@ -266,6 +279,11 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     const next = !get().historyOpen;
     LS.set(HISTORY_KEY, next);
     set({ historyOpen: next });
+  },
+
+  setLocalBackendActive: (active) => {
+    LS.set(LOCAL_BA_KEY, active);
+    set({ localBackendActive: active });
   },
 
   // ── Memories ─────────────────────────────────────────────────────────────

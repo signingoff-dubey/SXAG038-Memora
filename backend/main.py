@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -30,14 +31,24 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
     raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
 
+# CORS configuration
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+    "https://memora-kabir.netlify.app",
+]
+
+# Add production origin from env if available
+extra_origin = os.getenv("ALLOWED_ORIGIN")
+if extra_origin:
+    allowed_origins.append(extra_origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.netlify\.app", # Allow any Netlify preview/prod link
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
