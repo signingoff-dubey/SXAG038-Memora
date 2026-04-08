@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useMemoryStore } from '../store/memoryStore';
 import type { MemoryData } from '../api/client';
 
@@ -7,53 +7,66 @@ interface WSMessage {
   data: MemoryData | { id: string } | { memory_a: MemoryData; memory_b: MemoryData };
 }
 
-export function useWebSocket() {
+export function useWebSocket(userId: string = 'default') {
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
-  const { addMemory, updateMemory, removeMemory } = useMemoryStore();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addMemory = useMemoryStore((state) => state.addMemory);
+  const updateMemory = useMemoryStore((state) => state.updateMemory);
+  const removeMemory = useMemoryStore((state) => state.removeMemory);
 
-  useEffect(() => {
-    let attempt = 0;
-
-    function connect() {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const ws = new WebSocket(`${protocol}//${window.location.host}/ws/memories`);
-      wsRef.current = ws;
-
-      ws.onopen = () => { attempt = 0; };
-
-      ws.onmessage = (event) => {
-        const msg: WSMessage = JSON.parse(event.data);
-        switch (msg.event) {
-          case 'memory_created':
-            addMemory(msg.data as MemoryData);
-            break;
-          case 'memory_updated':
-            updateMemory(msg.data as MemoryData);
-            break;
-          case 'memory_deleted':
-            removeMemory((msg.data as { id: string }).id);
-            break;
-          case 'contradiction_detected': {
-            const cd = msg.data as { memory_a: MemoryData; memory_b: MemoryData };
-            updateMemory(cd.memory_a);
-            updateMemory(cd.memory_b);
-            break;
-          }
-        }
-      };
-
-      ws.onclose = () => {
-        attempt++;
-        const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
-        reconnectTimer.current = setTimeout(connect, delay);
-      };
+  const connect = useCallback(() => {
+    if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    
+    // In production, use VITE_API_URL to derive the WS host. 
+    // Example: VITE_API_URL="https://backend.com" -> wss://backend.com/ws/memories
+    let wsHost = window.location.host;
+    const apiUrl = (import.meta as any).env.VITE_API_URL;
+    if (apiUrl && apiUrl.startsWith('http')) {
+      wsHost = apiUrl.replace(/^https?:\/\//, '');
     }
 
+    const ws = new WebSocket(`${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`);
+    wsRef.current = ws;
+
+    ws.onopen = () => { console.log('WebSocket connected'); };
+
+    ws.onmessage = (event) => {
+      const msg: WSMessage = JSON.parse(event.data);
+      switch (msg.event) {
+        case 'memory_created':
+          addMemory(msg.data as MemoryData);
+          break;
+        case 'memory_updated':
+          updateMemory(msg.data as MemoryData);
+          break;
+        case 'memory_deleted':
+          removeMemory((msg.data as { id: string }).id);
+          break;
+        case 'contradiction_detected': {
+          const cd = msg.data as { memory_a: MemoryData; memory_b: MemoryData };
+          updateMemory(cd.memory_a);
+          updateMemory(cd.memory_b);
+          break;
+        }
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      const delay = Math.min(1000 * Math.pow(2, 1), 30000);
+      reconnectTimer.current = setTimeout(connect, delay);
+    };
+  }, [userId, addMemory, updateMemory, removeMemory]);
+
+  useEffect(() => {
     connect();
     return () => {
-      wsRef.current?.close();
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      wsRef.current?.close();
     };
-  }, [addMemory, updateMemory, removeMemory]);
+  }, [connect]);
 }

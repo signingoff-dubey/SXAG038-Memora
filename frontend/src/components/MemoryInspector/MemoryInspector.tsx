@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Brain, Check, ChevronDown, Clock, Flame, TrendingDown,
   Search, Download, Upload, X, Clock3,
 } from 'lucide-react';
 import { MemoryCard } from './MemoryCard';
 import { useMemories } from '../../hooks/useMemories';
-import { memoriesApi } from '../../api/client';
 import { useMemoryStore } from '../../store/memoryStore';
 import type { MemoryData } from '../../api/client';
 
@@ -126,21 +125,22 @@ export function MemoryInspector() {
   const importRef = useRef<HTMLInputElement>(null);
 
   // ── Apply filter + search ─────────────────────────────────────────────────
-  const filtered = memories.filter((m) => {
-    if (filter === 'cross-session' && m.is_session_only) return false;
-    if (filter === 'session-only' && !m.is_session_only) return false;
-    if (search.trim()) {
-      return m.content.toLowerCase().includes(search.toLowerCase());
-    }
-    return true;
-  });
+  const sorted = useMemo(() => {
+    const filtered = memories.filter((m) => {
+      if (filter === 'cross-session' && m.is_session_only) return false;
+      if (filter === 'session-only' && !m.is_session_only) return false;
+      if (search.trim()) {
+        return m.content.toLowerCase().includes(search.toLowerCase());
+      }
+      return true;
+    });
 
-  // ── Sort ──────────────────────────────────────────────────────────────────
-  const sorted = [...filtered].sort((a, b) => {
-    if (sort === 'importance') return b.importance - a.importance;
-    if (sort === 'decay') return a.decay_score - b.decay_score;
-    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-  });
+    return [...filtered].sort((a, b) => {
+      if (sort === 'importance') return b.importance - a.importance;
+      if (sort === 'decay') return a.decay_score - b.decay_score;
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    });
+  }, [memories, filter, search, sort]);
 
   // ── Cluster into groups ───────────────────────────────────────────────────
   const pinned        = sorted.filter((m) => m.is_pinned);
@@ -162,18 +162,36 @@ export function MemoryInspector() {
   };
 
   // ── Import ────────────────────────────────────────────────────────────────
+  const isValidMemory = (obj: unknown): obj is MemoryData => {
+    if (!obj || typeof obj !== 'object') return false;
+    const m = obj as Record<string, unknown>;
+    return (
+      typeof m.id === 'string' &&
+      typeof m.content === 'string' &&
+      typeof m.importance === 'number' &&
+      m.importance >= 0 &&
+      m.importance <= 10
+    );
+  };
+
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
       const text = await file.text();
-      const items: MemoryData[] = JSON.parse(text);
+      const parsed = JSON.parse(text);
+      const items: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+      let importedCount = 0;
       for (const m of items) {
         try {
-          // POST to create — we reuse the update endpoint but the memory may not exist
-          // For import we just add to the local store; a full import API can be added later
-          addMemory(m);
-        } catch { /* skip */ }
+          if (isValidMemory(m)) {
+            addMemory(m);
+            importedCount++;
+          }
+        } catch { /* skip invalid items */ }
+      }
+      if (importedCount === 0) {
+        alert('No valid memories found in file');
       }
     } catch {
       alert('Invalid JSON file');

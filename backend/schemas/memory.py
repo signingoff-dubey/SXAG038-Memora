@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -14,9 +15,9 @@ class MemoryResponse(BaseModel):
     is_session_only: bool = False
     contradiction_with: list[str] = []
     access_count: int
-    created_at: str | None = None
-    last_accessed_at: str | None = None
-    updated_at: str | None = None
+    created_at: datetime | str | None = None
+    last_accessed_at: datetime | str | None = None
+    updated_at: datetime | str | None = None
 
     class Config:
         from_attributes = True

@@ -1,0 +1,10 @@
+{
+  "name": "memora-monorepo",
+  "private": true,
+  "scripts": {
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "build": "npm run build:frontend",
+    "install:all": "cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
+    "start": "run.bat"
+  }
+}

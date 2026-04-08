@@ -1,8 +1,18 @@
-# Memora — Context-Aware AI Agent with Persistent Memory
+# Memora v4.0 — Context-Aware AI Agent with Persistent Memory
 
 Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
 ---
+
+## Release Notes
+
+### v4.0
+- One-Click Automated Startup: run.bat now starts Ollama, Backend, and Frontend, and automatically opens browser tabs for both the app and API documentation.
+- Ollama integration: ollama serve is started automatically by the startup script if Ollama is installed.
+- Security enhancements: added authentication middleware, per-memory authorization checks, rate limiting, prompt-injection mitigation, per-user WebSocket scoping.
+- Performance enhancements: DB indexes on Memory model; LLM response caching.
+- Frontend improvements: memory leak fixes; improved hook dependencies.
+- Infrastructure updates: cross-platform networking defaults; enhanced data validation via Pydantic updates.
 
 ## Features
 
@@ -38,6 +48,11 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 - **Auto model detection** — fetches installed Ollama models on page load and auto-selects one if the stored model is not available
 - **Vision badge** — 👁 shown on models that support image input
 - **Multi-model support** — choose any locally installed Ollama model, or connect any OpenAI-compatible API with a custom key
+
+### Infrastructure (New in v4.0)
+- **One-Click Automated Startup** — `run.bat` initializes Ollama, Backend, and Frontend, then automatically launches browser tabs for both the app and API documentation.
+- **Cross-Platform Network Stability** — standardized local networking on `127.0.0.1` to resolve IPv6/IPv4 resolution conflicts (`ECONNREFUSED`).
+- **Resilient Data Validation** — enhanced Pydantic schema architecture for robust handling of date-time objects and mixed data types.
 
 ### RAG Pipeline (`rag_assistant/`)
 - **`MemoraRAGPipeline`** — reusable Python class backed by Memora's own services (same all-MiniLM-L6-v2 embeddings, shared ChromaDB collection, same Ollama/OpenAI-compatible LLM client)
@@ -139,7 +154,25 @@ memora/
 - Node.js 18+
 - [Ollama](https://ollama.com) installed and running locally
 
-### 1. Pull models
+### Quick Start (Recommended)
+
+Simply run the automated startup script in the root directory:
+
+```bash
+run.bat
+```
+
+This will:
+1. Check for Python and Node.js.
+2. Install backend and frontend dependencies.
+3. Start Ollama, the Backend, and the Frontend.
+4. **Automatically open** the application and API documentation in your browser.
+
+---
+
+### Manual Setup (Alternative)
+
+#### 1. Pull models
 
 ```bash
 # Text model (required)
@@ -149,9 +182,7 @@ ollama pull qwen2.5-coder:7b
 ollama pull llava:7b
 ```
 
-Any other model works too — Memora auto-detects what you have installed.
-
-### 2. Backend
+#### 2. Backend
 
 ```bash
 cd backend
@@ -159,9 +190,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-The `data/` directory and database migrations run automatically on first start.
-
-### 3. Frontend
+#### 3. Frontend
 
 ```bash
 cd frontend
