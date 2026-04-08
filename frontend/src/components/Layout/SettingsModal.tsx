@@ -208,6 +208,58 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           </div>
         )}
 
+        {/* ── Analytics Tab ── */}
+        {activeTab === 'analytics' && (
+          <div className="px-6 py-5 space-y-4">
+            {/* Stat grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: 'Total memories', value: totalMemories },
+                { label: 'Pinned', value: pinned },
+                { label: 'Conflicts', value: conflicts },
+                { label: 'Session-only', value: sessionOnly },
+                { label: 'Avg importance', value: avgImportance },
+                { label: 'Avg health', value: totalMemories ? `${avgDecay}%` : '—' },
+              ].map(({ label, value }) => (
+                <div key={label} className="rounded-xl p-3 nm-inset text-center">
+                  <p className="text-xl font-bold tabular-nums" style={{ color: 'var(--accent)' }}>{value}</p>
+                  <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'var(--text-muted)' }}>{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Top memories */}
+            {topMemories.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Top memories by importance
+                </p>
+                <div className="space-y-2">
+                  {topMemories.map((m) => (
+                    <div key={m.id} className="flex items-start gap-2 p-2.5 rounded-xl nm-inset">
+                      <span
+                        className="flex-shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                        style={{ background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }}
+                      >
+                        {m.importance.toFixed(1)}
+                      </span>
+                      <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--text-primary)' }}>
+                        {m.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {totalMemories === 0 && (
+              <p className="text-center text-xs py-6" style={{ color: 'var(--text-muted)' }}>
+                No memories yet. Start chatting to build your memory profile.
+              </p>
+            )}
+          </div>
+        )}
+
         {/* ── Profile Tab ── */}
         {activeTab !== 'analytics' && (
         <div className="px-6 py-5 space-y-5">

@@ -6,7 +6,7 @@ import { ChatHistory } from './components/Layout/ChatHistory';
 import { SettingsModal } from './components/Layout/SettingsModal';
 import { useWebSocket } from './hooks/useWebSocket';
 import { useMemoryStore } from './store/memoryStore';
-import { modelsApi, contextApi } from './api/client';
+import { modelsApi } from './api/client';
 import axios from 'axios';
 import { Brain, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 
