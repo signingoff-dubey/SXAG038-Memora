@@ -43,6 +43,7 @@ export function MemoryCard({
   const allMemories = useMemoryStore((s) => s.memories);
   const [showImportanceSlider, setShowImportanceSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(Math.round(memory.importance));
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const conflictContents = (memory.contradiction_with || [])
     .map((cid) => allMemories.find((m) => m.id === cid)?.content)
@@ -57,9 +58,14 @@ export function MemoryCard({
       ? 'nm-card-pinned'
       : 'nm-card';
 
-  const handleSliderCommit = () => {
+  const handleSliderCommit = async () => {
     if (sliderValue !== Math.round(memory.importance)) {
-      onImportanceChange(memory.id, sliderValue);
+      try {
+        await onImportanceChange(memory.id, sliderValue);
+      } catch {
+        setSaveError('Failed to save');
+        return;
+      }
     }
     setShowImportanceSlider(false);
   };
@@ -178,8 +184,11 @@ export function MemoryCard({
             step={1}
             value={sliderValue}
             onChange={(e) => setSliderValue(Number(e.target.value))}
-            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-            style={{ accentColor: 'var(--accent)' }}
+            className="w-full h-2 rounded-full cursor-pointer"
+            style={{
+              accentColor: 'var(--accent)',
+              background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${(sliderValue - 1) * 11.1}%, var(--bg-tertiary) ${(sliderValue - 1) * 11.1}%, var(--bg-tertiary) 100%)`,
+            }}
           />
           <div className="flex justify-between text-[9px] mt-1" style={{ color: 'var(--text-muted)' }}>
             <span>trivial</span>
@@ -201,6 +210,11 @@ export function MemoryCard({
               Save
             </button>
           </div>
+          {saveError && (
+            <p className="text-[10px] mt-1.5 text-center" style={{ color: 'var(--danger)' }}>
+              {saveError}
+            </p>
+          )}
         </div>
       )}
 

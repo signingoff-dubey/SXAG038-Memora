@@ -41,7 +41,9 @@ function App() {
         createSession();
       }
     }
+  }, [activeSessionId, sessions, loadSession, createSession]);
 
+  useEffect(() => {
     // 2. Fetch installed Ollama models, auto-select if current isn't available
     modelsApi.list().then(({ data }) => {
       const names = data.models.map((m) => m.name);
@@ -54,8 +56,7 @@ function App() {
     }).catch(() => {
       // Ollama might not be running — that's fine, keep the stored model
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [customConfig, selectedModel, setInstalledModels, setSelectedModel]);
 
   useWebSocket();
 

@@ -1,6 +1,16 @@
+import hashlib
 import httpx
+from functools import lru_cache
 
 from config import settings
+
+_llm_response_cache: dict[str, tuple[str, float]] = {}
+_CACHE_TTL_SECONDS = 300
+
+
+def _cache_key(prompt: str, model: str | None, base_url: str | None) -> str:
+    key_str = f"{prompt}:{model}:{base_url}"
+    return hashlib.sha256(key_str.encode()).hexdigest()
 
 
 def _is_openai_compatible(base_url: str) -> bool:
@@ -8,7 +18,9 @@ def _is_openai_compatible(base_url: str) -> bool:
     return "openai.com" in base_url or "/v1" in base_url
 
 
-def _build_openai_messages(messages: list[dict], images: list[str] | None) -> list[dict]:
+def _build_openai_messages(
+    messages: list[dict], images: list[str] | None
+) -> list[dict]:
     """
     Convert messages to OpenAI vision format when images are present.
     Images are attached to the last user message.
@@ -22,7 +34,9 @@ def _build_openai_messages(messages: list[dict], images: list[str] | None) -> li
             content: list[dict] = [{"type": "text", "text": msg["content"]}]
             for b64 in images:
                 # Accept raw base64 or data URLs
-                url = b64 if b64.startswith("data:") else f"data:image/jpeg;base64,{b64}"
+                url = (
+                    b64 if b64.startswith("data:") else f"data:image/jpeg;base64,{b64}"
+                )
                 content.append({"type": "image_url", "image_url": {"url": url}})
             result.append({"role": "user", "content": content})
         else:
@@ -30,7 +44,9 @@ def _build_openai_messages(messages: list[dict], images: list[str] | None) -> li
     return result
 
 
-def _build_ollama_messages(messages: list[dict], images: list[str] | None) -> list[dict]:
+def _build_ollama_messages(
+    messages: list[dict], images: list[str] | None
+) -> list[dict]:
     """
     Attach images to the last user message for Ollama's native format.
     Strips data URL prefix — Ollama wants raw base64.
@@ -40,7 +56,7 @@ def _build_ollama_messages(messages: list[dict], images: list[str] | None) -> li
 
     raw_images = []
     for b64 in images:
-        if "," in b64:          # data:image/jpeg;base64,<data>
+        if "," in b64:  # data:image/jpeg;base64,<data>
             raw_images.append(b64.split(",", 1)[1])
         else:
             raw_images.append(b64)
@@ -68,7 +84,10 @@ async def chat_completion(
 
     if api_key and _is_openai_compatible(base_url):
         # OpenAI-compatible endpoint (supports vision via content array)
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
         endpoint = base_url.rstrip("/") + "/chat/completions"
         payload = {
             "model": effective_model,
@@ -122,37 +141,43 @@ async def classify_and_score_memories(
       { "content": str, "importance": float, "is_session_only": bool }
     """
     import json
+
     prompt = (
-        "Analyze this conversation and extract facts worth storing in long-term memory.\n\n"
-        "## STRICT RULES\n"
-        "INCLUDE (cross-session facts — persist across all future chats):\n"
-        "  - User identity: name, age, job, location, nationality\n"
-        "  - Persistent preferences: favourite tools, languages, foods, hobbies\n"
-        "  - Long-term goals or projects the user keeps returning to\n"
-        "  - Skills the user has or is developing\n"
-        "  - Strong opinions on topics they care about\n\n"
-        "EXCLUDE completely (return []):\n"
-        "  - Greetings, small talk, pleasantries\n"
-        "  - One-off task requests: 'write me code', 'explain X', 'help me debug Y'\n"
-        "  - Results of tasks (the actual code, the explanation text)\n"
-        "  - Questions the user asked in this session only\n\n"
-        "SESSION-ONLY (include but mark is_session_only=true, importance 1–2):\n"
-        "  - Topics the user asked about once that might hint at a very weak preference\n"
-        "  - Very minor transient facts\n\n"
+        "Extract long-term facts from the USER's message below.\n\n"
+        "## CRITICAL RULES\n"
+        "1. Analyze ONLY what the USER said. IGNORE the assistant response completely.\n"
+        "   The assistant reply is irrelevant noise (e.g. 'Hello Kabir!' is just a greeting).\n"
+        "   DO NOT extract facts from it — only extract from USER's message.\n"
+        "2. EXCLUDE completely → return []:\n"
+        "   - Greetings / pleasantries ('hi', 'hello', 'thanks')\n"
+        "   - One-off task requests ('write me code', 'explain X', 'help me debug Y')\n"
+        "   - The results of tasks (actual code, explanations, summaries)\n"
+        "   - Questions the user asked about a topic without sharing a personal fact\n"
+        "3. INCLUDE (cross-session, is_session_only=false):\n"
+        "   - User identity: name, age, job title, location, nationality\n"
+        "   - Persistent preferences: favourite tools, languages, foods, hobbies\n"
+        "   - Long-term goals or recurring projects\n"
+        "   - Skills the user has or is actively learning\n"
+        "   - Strong personal opinions\n"
+        "4. SESSION-ONLY (is_session_only=true, importance 1–2):\n"
+        "   - Very minor transient facts or one-off topic hints\n\n"
         "## IMPORTANCE SCALE\n"
         "  9–10 : Core identity (name, profession, nationality)\n"
         "  7–8  : Strong recurring preferences or skills\n"
         "  5–6  : Moderate preferences or interests\n"
         "  3–4  : Weak or speculative preferences\n"
         "  1–2  : Session-only or barely noteworthy\n\n"
-        "## EXAMPLES\n"
-        "User: 'Write Hello World in C'  → [] (pure task, nothing to remember)\n"
-        "User: 'I love Python'          → [{content:'User prefers Python', importance:7, is_session_only:false}]\n"
-        "User: 'My name is Kabir'       → [{content:'User name is Kabir', importance:9, is_session_only:false}]\n"
-        "User: 'Can you help me sort a list?' → [] (one-off task)\n\n"
+        "## EXAMPLES (→ shows expected output)\n"
+        "User: 'hi'                          → []\n"
+        "User: 'Write Hello World in C'      → []\n"
+        "User: 'Can you sort a list for me?' → []\n"
+        'User: \'I love Python\'               → [{"content":"User prefers Python","importance":7,"is_session_only":false}]\n'
+        'User: \'My name is Kabir\'            → [{"content":"User name is Kabir","importance":9,"is_session_only":false}]\n'
+        "User: 'I am Kabir'  (assistant replied 'Hello Kabir!')\n"
+        '  → [{"content":"User name is Kabir","importance":9,"is_session_only":false}]\n'
+        "  (the assistant greeting is NOT a fact — ignore it)\n\n"
         "Return ONLY a valid JSON array. If nothing qualifies, return [].\n\n"
-        f"User: {user_message}\n"
-        f"Assistant: {assistant_response}\n\n"
+        f"USER message: {user_message}\n\n"
         "JSON array:"
     )
     result = await chat_completion(
@@ -183,11 +208,13 @@ async def classify_and_score_memories(
                 # Enforce cap: session-only memories must not exceed importance 3
                 if is_session:
                     imp = min(imp, 3.0)
-                cleaned.append({
-                    "content": content,
-                    "importance": imp,
-                    "is_session_only": is_session,
-                })
+                cleaned.append(
+                    {
+                        "content": content,
+                        "importance": imp,
+                        "is_session_only": is_session,
+                    }
+                )
             return cleaned
     except (json.JSONDecodeError, ValueError):
         pass

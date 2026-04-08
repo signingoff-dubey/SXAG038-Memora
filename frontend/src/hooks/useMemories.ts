@@ -1,38 +1,60 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { memoriesApi } from '../api/client';
 import { useMemoryStore } from '../store/memoryStore';
 
 export function useMemories() {
-  const { memories, setMemories, updateMemory, removeMemory } = useMemoryStore();
+  const memories = useMemoryStore((state) => state.memories);
+  const setMemories = useMemoryStore((state) => state.setMemories);
+  const updateMemory = useMemoryStore((state) => state.updateMemory);
+  const removeMemory = useMemoryStore((state) => state.removeMemory);
+  const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    memoriesApi.list().then(({ data }) => setMemories(data)).catch(() => {});
+  const fetchMemories = useCallback(async () => {
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    try {
+      const { data } = await memoriesApi.list();
+      setMemories(data);
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Failed to fetch memories:', err);
+      }
+    }
   }, [setMemories]);
 
-  const pinMemory = async (id: string, pinned: boolean) => {
+  useEffect(() => {
+    fetchMemories();
+    return () => abortRef.current?.abort();
+  }, [fetchMemories]);
+
+  const pinMemory = useCallback(async (id: string, pinned: boolean) => {
     const { data } = await memoriesApi.update(id, { is_pinned: pinned });
     updateMemory(data);
-  };
+  }, [updateMemory]);
 
-  const flagMemory = async (id: string, flagged: boolean) => {
+  const flagMemory = useCallback(async (id: string, flagged: boolean) => {
     const { data } = await memoriesApi.update(id, { is_flagged_unimportant: flagged });
     updateMemory(data);
-  };
+  }, [updateMemory]);
 
-  const deleteMemory = async (id: string) => {
+  const deleteMemory = useCallback(async (id: string) => {
     await memoriesApi.delete(id);
     removeMemory(id);
-  };
+  }, [removeMemory]);
 
-  const updateImportance = async (id: string, importance: number) => {
-    const { data } = await memoriesApi.update(id, { importance });
-    updateMemory(data);
-  };
+  const updateImportance = useCallback(async (id: string, importance: number) => {
+    try {
+      const { data } = await memoriesApi.update(id, { importance });
+      updateMemory(data);
+    } catch {
+      throw new Error('Failed to save');
+    }
+  }, [updateMemory]);
 
-  const toggleSessionOnly = async (id: string, isSessionOnly: boolean) => {
+  const toggleSessionOnly = useCallback(async (id: string, isSessionOnly: boolean) => {
     const { data } = await memoriesApi.update(id, { is_session_only: isSessionOnly });
     updateMemory(data);
-  };
+  }, [updateMemory]);
 
   return { memories, pinMemory, flagMemory, deleteMemory, updateImportance, toggleSessionOnly };
 }

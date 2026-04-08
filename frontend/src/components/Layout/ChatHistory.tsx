@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Plus, Trash2, MessageSquare } from 'lucide-react';
 import { useMemoryStore } from '../../store/memoryStore';
 
@@ -13,7 +14,7 @@ function timeAgo(ts: number): string {
 
 export function ChatHistory() {
   const { sessions, activeSessionId, loadSession, deleteSession, createSession } = useMemoryStore();
-  const sorted = [...sessions].sort((a, b) => b.lastUpdated - a.lastUpdated);
+  const sorted = useMemo(() => [...sessions].sort((a, b) => b.lastUpdated - a.lastUpdated), [sessions]);
 
   return (
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-secondary)' }}>

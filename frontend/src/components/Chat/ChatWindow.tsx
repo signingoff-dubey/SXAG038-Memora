@@ -33,7 +33,7 @@ export function ChatWindow() {
         ) : (
           messages.map((msg, i) => (
             <MessageBubble
-              key={i}
+              key={`${msg.timestamp}-${i}`}
               role={msg.role}
               content={msg.content}
               images={msg.images}

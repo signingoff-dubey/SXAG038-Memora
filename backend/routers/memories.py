@@ -21,7 +21,11 @@ def _utcnow() -> datetime:
 
 @router.get("", response_model=list[MemoryResponse])
 async def list_memories(user_id: str = "default", db: AsyncSession = Depends(get_db)):
-    stmt = select(Memory).where(Memory.user_id == user_id).order_by(Memory.created_at.desc())
+    stmt = (
+        select(Memory)
+        .where(Memory.user_id == user_id)
+        .order_by(Memory.created_at.desc())
+    )
     result = await db.execute(stmt)
     memories = result.scalars().all()
 
@@ -39,8 +43,10 @@ async def list_memories(user_id: str = "default", db: AsyncSession = Depends(get
 
 
 @router.get("/{memory_id}", response_model=MemoryResponse)
-async def get_memory(memory_id: str, db: AsyncSession = Depends(get_db)):
-    stmt = select(Memory).where(Memory.id == memory_id)
+async def get_memory(
+    memory_id: str, user_id: str = "default", db: AsyncSession = Depends(get_db)
+):
+    stmt = select(Memory).where(Memory.id == memory_id, Memory.user_id == user_id)
     result = await db.execute(stmt)
     memory = result.scalar_one_or_none()
     if not memory:
@@ -49,8 +55,13 @@ async def get_memory(memory_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.patch("/{memory_id}", response_model=MemoryResponse)
-async def update_memory(memory_id: str, update: MemoryUpdate, db: AsyncSession = Depends(get_db)):
-    stmt = select(Memory).where(Memory.id == memory_id)
+async def update_memory(
+    memory_id: str,
+    update: MemoryUpdate,
+    user_id: str = "default",
+    db: AsyncSession = Depends(get_db),
+):
+    stmt = select(Memory).where(Memory.id == memory_id, Memory.user_id == user_id)
     result = await db.execute(stmt)
     memory = result.scalar_one_or_none()
     if not memory:
@@ -78,9 +89,16 @@ async def update_memory(memory_id: str, update: MemoryUpdate, db: AsyncSession =
         memory.updated_at = _utcnow()
         new_embedding = await asyncio.to_thread(embeddings.embed_text, update.content)
         vector_store.update_memory(
-            memory.id, new_embedding, update.content,
-            {"user_id": memory.user_id, "importance": memory.importance,
-             "created_at": memory.created_at.isoformat() if memory.created_at else ""},
+            memory.id,
+            new_embedding,
+            update.content,
+            {
+                "user_id": memory.user_id,
+                "importance": memory.importance,
+                "created_at": memory.created_at.isoformat()
+                if memory.created_at
+                else "",
+            },
         )
 
     await db.commit()
@@ -90,8 +108,10 @@ async def update_memory(memory_id: str, update: MemoryUpdate, db: AsyncSession =
 
 
 @router.delete("/{memory_id}")
-async def delete_memory(memory_id: str, db: AsyncSession = Depends(get_db)):
-    stmt = select(Memory).where(Memory.id == memory_id)
+async def delete_memory(
+    memory_id: str, user_id: str = "default", db: AsyncSession = Depends(get_db)
+):
+    stmt = select(Memory).where(Memory.id == memory_id, Memory.user_id == user_id)
     result = await db.execute(stmt)
     memory = result.scalar_one_or_none()
     if not memory:

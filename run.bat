@@ -1,0 +1,123 @@
+@echo off
+setlocal enabledelayedexpansion
+
+cd /d "%~dp0"
+
+echo ========================================
+echo Starting Memora Application
+echo ========================================
+
+REM Check if backend folder exists
+if not exist "backend" (
+    echo [ERROR] Backend folder not found
+    pause
+    exit /b 1
+)
+
+REM Check if frontend folder exists
+if not exist "frontend" (
+    echo [ERROR] Frontend folder not found
+    pause
+    exit /b 1
+)
+
+echo.
+echo [1/5] Checking Python...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Python not found. Please install Python 3.9+
+    pause
+    exit /b 1
+)
+echo    Python: OK
+
+echo.
+echo [2/5] Checking Node.js...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Node.js not found. Please install Node.js 18+
+    pause
+    exit /b 1
+)
+echo    Node.js: OK
+
+echo.
+echo [3/5] Installing backend dependencies...
+cd backend
+if not exist "requirements.txt" (
+    echo [ERROR] requirements.txt not found
+    cd ..
+    pause
+    exit /b 1
+)
+
+pip install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo [ERROR] Failed to install Python dependencies
+    cd ..
+    pause
+    exit /b 1
+)
+echo    Dependencies: OK
+cd ..
+
+echo.
+echo [4/5] Installing frontend dependencies...
+cd frontend
+if not exist "package.json" (
+    echo [ERROR] package.json not found
+    cd ..
+    pause
+    exit /b 1
+)
+
+if not exist "node_modules" (
+    call npm install --silent
+    if errorlevel 1 (
+        echo [ERROR] Failed to install frontend dependencies
+        cd ..
+        pause
+        exit /b 1
+    )
+)
+echo    Dependencies: OK
+cd ..
+
+echo.
+echo [5/5] Starting services...
+
+REM Check if Ollama is installed
+where ollama >nul 2>&1
+if not errorlevel 1 (
+    echo Starting Ollama...
+    start "Ollama" cmd /k "ollama serve"
+    timeout /t 3 /nobreak >nul
+) else (
+    echo [WARNING] Ollama not found in PATH. Skipping...
+    echo         Install from: https://ollama.ai
+)
+
+echo Starting Backend...
+start "Memora Backend" cmd /k "cd /d "%~dp0backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload"
+
+timeout /t 2 /nobreak >nul
+
+echo Starting Frontend...
+start "Memora Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+
+echo Opening browsers...
+timeout /t 5 /nobreak >nul
+start "" "http://localhost:5173"
+start "" "http://127.0.0.1:8000/docs"
+
+echo.
+echo ========================================
+echo All services started!
+echo.
+echo   Ollama:   http://localhost:11434
+echo   Backend:  http://127.0.0.1:8000 (Docs: /docs)
+echo   Frontend: http://localhost:5173
+echo.
+echo Press any key to close this window...
+echo ========================================
+pause >nul

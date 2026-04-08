@@ -1,14 +1,48 @@
-from pydantic import BaseModel
+import re
+from urllib.parse import urlparse
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=10000)
     session_id: str | None = None
-    user_id: str = "default"
-    model: str | None = None
-    custom_base_url: str | None = None
-    custom_api_key: str | None = None
-    images: list[str] | None = None   # base64-encoded image strings
+    user_id: str = Field(default="default", max_length=100)
+    model: str | None = Field(default=None, max_length=100)
+    custom_base_url: str | None = Field(default=None, max_length=500)
+    custom_api_key: str | None = Field(default=None, max_length=500)
+    images: list[str] | None = Field(default=None, max_length=10)
+
+    @field_validator(
+        "user_id", "model", "custom_base_url", "custom_api_key", mode="before"
+    )
+    @classmethod
+    def sanitize_string(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
+    @model_validator(mode="after")
+    def validate_urls(self):
+        if self.custom_base_url:
+            parsed = urlparse(self.custom_base_url)
+            if parsed.scheme not in ("http", "https"):
+                raise ValueError("Invalid URL scheme")
+            if parsed.netloc in ("localhost", "127.0.0.1", "::1"):
+                pass
+            private_ip_patterns = [
+                r"^10\.",
+                r"^172\.(1[6-9]|2[0-9]|3[0-1])\.",
+                r"^192\.168\.",
+                r"^127\.",
+            ]
+            ip = parsed.hostname or ""
+            for pattern in private_ip_patterns:
+                if re.match(pattern, ip):
+                    raise ValueError("Private IP addresses not allowed")
+        return self
 
 
 class ChatResponse(BaseModel):

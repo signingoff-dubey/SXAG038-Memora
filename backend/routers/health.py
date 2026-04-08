@@ -1,9 +1,12 @@
+import logging
+
 import httpx
 from fastapi import APIRouter
 
 from config import settings
 from services.llm import get_ollama_models
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["health"])
 
 
@@ -14,8 +17,8 @@ async def health():
         async with httpx.AsyncClient(timeout=5.0) as client:
             resp = await client.get(f"{settings.ollama_base_url}/api/tags")
             ollama_ok = resp.status_code == 200
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Health check failed to connect to Ollama: {e}")
 
     return {
         "status": "ok",
