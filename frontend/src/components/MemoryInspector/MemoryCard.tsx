@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pin, ArrowDown, Trash2, Clock, RefreshCw } from 'lucide-react';
+import { Pin, ArrowDown, Trash2, Clock, RefreshCw, Brain } from 'lucide-react';
 import { DecayBar } from './DecayBar';
 import { ConflictBadge } from './ConflictBadge';
 import { useMemoryStore } from '../../store/memoryStore';
