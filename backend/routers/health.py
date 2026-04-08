@@ -2,6 +2,7 @@ import httpx
 from fastapi import APIRouter
 
 from config import settings
+from services.llm import get_ollama_models
 
 router = APIRouter(prefix="/api", tags=["health"])
 
@@ -20,4 +21,21 @@ async def health():
         "status": "ok",
         "ollama": "connected" if ollama_ok else "disconnected",
         "model": settings.ollama_model,
+    }
+
+
+@router.get("/models")
+async def list_models():
+    """Return all locally available Ollama models."""
+    models = await get_ollama_models()
+    return {
+        "models": [
+            {
+                "name": m.get("name", ""),
+                "size": m.get("size", 0),
+                "modified_at": m.get("modified_at", ""),
+                "details": m.get("details", {}),
+            }
+            for m in models
+        ]
     }

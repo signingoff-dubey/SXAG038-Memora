@@ -1,6 +1,6 @@
 import asyncio
 import math
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import settings
 from models.memory import Memory
 from services import embeddings, vector_store
+
+
+def _utcnow() -> datetime:
+    """Naive UTC datetime, consistent with SQLite storage."""
+    return datetime.utcnow()
 
 
 async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[dict]:
@@ -29,7 +34,7 @@ async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[
     result = await db.execute(stmt)
     db_memories = {m.id: m for m in result.scalars().all()}
 
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     scored = []
 
     for i, mem_id in enumerate(memory_ids):
@@ -39,7 +44,10 @@ async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[
 
         cosine_sim = 1 - distances[i]
 
-        days_since = (now - mem.last_accessed_at).total_seconds() / 86400.0
+        last = mem.last_accessed_at
+        if last is None:
+            last = now
+        days_since = (now - last).total_seconds() / 86400.0
         recency = math.exp(-0.1 * days_since)
 
         importance_norm = mem.importance / 10.0
@@ -50,18 +58,10 @@ async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[
             + settings.weight_importance * importance_norm
         )
 
-        if mem.is_pinned:
-            decay = 1.0
-        else:
-            decay = math.exp(-mem.lambda_rate * days_since)
-
+        decay = 1.0 if mem.is_pinned else math.exp(-mem.lambda_rate * days_since)
         final_score = base_score * decay
 
-        scored.append({
-            "memory": mem,
-            "score": final_score,
-            "cosine_sim": cosine_sim,
-        })
+        scored.append({"memory": mem, "score": final_score, "cosine_sim": cosine_sim})
 
     scored.sort(key=lambda x: x["score"], reverse=True)
     top = scored[: settings.context_memories]
@@ -70,11 +70,9 @@ async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[
         mem = item["memory"]
         mem.access_count += 1
         mem.last_accessed_at = now
-        days_since = (now - mem.created_at).total_seconds() / 86400.0
-        if not mem.is_pinned:
-            mem.decay_score = math.exp(-mem.lambda_rate * days_since)
-        else:
-            mem.decay_score = 1.0
+        created = mem.created_at or now
+        days_since_created = (now - created).total_seconds() / 86400.0
+        mem.decay_score = 1.0 if mem.is_pinned else math.exp(-mem.lambda_rate * days_since_created)
 
     await db.commit()
 

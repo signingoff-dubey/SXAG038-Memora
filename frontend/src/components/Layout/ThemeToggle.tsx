@@ -7,15 +7,13 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg transition-colors hover:opacity-70"
-      style={{ background: 'var(--bg-secondary)' }}
+      className="nm-btn p-2.5 rounded-xl transition-all"
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      {theme === 'dark' ? (
-        <Sun size={16} style={{ color: 'var(--warning)' }} />
-      ) : (
-        <Moon size={16} style={{ color: 'var(--accent)' }} />
-      )}
+      {theme === 'dark'
+        ? <Sun size={15} style={{ color: 'var(--warning)' }} />
+        : <Moon size={15} style={{ color: 'var(--accent)' }} />
+      }
     </button>
   );
 }

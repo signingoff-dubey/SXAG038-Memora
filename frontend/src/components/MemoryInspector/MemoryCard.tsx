@@ -2,6 +2,7 @@ import { Pin, ArrowDown, Trash2 } from 'lucide-react';
 import { DecayBar } from './DecayBar';
 import { ConflictBadge } from './ConflictBadge';
 import { ImportanceChip } from './ImportanceChip';
+import { useMemoryStore } from '../../store/memoryStore';
 import type { MemoryData } from '../../api/client';
 
 interface MemoryCardProps {
@@ -11,95 +12,128 @@ interface MemoryCardProps {
   onDelete: (id: string) => void;
 }
 
+function timeAgo(dateStr: string | null): string {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
 export function MemoryCard({ memory, onPin, onFlag, onDelete }: MemoryCardProps) {
-  const timeAgo = memory.created_at
-    ? getTimeAgo(new Date(memory.created_at))
-    : '';
+  const allMemories = useMemoryStore((s) => s.memories);
+
+  // Resolve conflicting memory contents from the store
+  const conflictContents = (memory.contradiction_with || [])
+    .map((cid) => allMemories.find((m) => m.id === cid)?.content)
+    .filter(Boolean) as string[];
+
+  const hasConflict = conflictContents.length > 0 || (memory.contradiction_with?.length ?? 0) > 0;
+  const conflictCount = memory.contradiction_with?.length ?? 0;
+
+  const cardClass = hasConflict
+    ? 'nm-card-conflict'
+    : memory.is_pinned
+      ? 'nm-card-pinned'
+      : 'nm-card';
 
   return (
     <div
-      className="rounded-xl p-3 mb-2 transition-all border"
-      style={{
-        background: 'var(--bg-card)',
-        borderColor: memory.contradiction_with?.length
-          ? 'var(--danger)'
-          : memory.is_pinned
-            ? 'var(--success)'
-            : 'var(--border)',
-      }}
+      className={`rounded-2xl p-3.5 mb-3 transition-all duration-200 ${cardClass}`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5">
-          <ImportanceChip score={memory.importance} />
-          {memory.is_pinned && (
+      {/* ── Row 1: badges + actions ── */}
+      <div className="flex items-center justify-between mb-2.5 gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {memory.is_pinned ? (
             <span
-              className="px-2 py-0.5 rounded text-[10px] font-medium"
-              style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--success)' }}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold"
+              style={{
+                background: 'color-mix(in srgb, var(--success) 18%, transparent)',
+                color: 'var(--success)',
+                border: '1px solid color-mix(in srgb, var(--success) 35%, transparent)',
+              }}
             >
-              pinned
+              📌 pinned
             </span>
+          ) : (
+            <ImportanceChip score={memory.importance} />
           )}
-          <ConflictBadge conflictIds={memory.contradiction_with || []} />
+          {hasConflict && <ConflictBadge count={conflictCount} />}
         </div>
-        <div className="flex items-center gap-1">
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => onPin(memory.id, !memory.is_pinned)}
-            className="p-1 rounded hover:opacity-70 transition-opacity"
+            className="nm-btn p-1.5 rounded-lg"
             title={memory.is_pinned ? 'Unpin' : 'Pin as important'}
           >
             <Pin
-              size={14}
+              size={12}
               style={{ color: memory.is_pinned ? 'var(--success)' : 'var(--text-muted)' }}
               fill={memory.is_pinned ? 'var(--success)' : 'none'}
             />
           </button>
           <button
             onClick={() => onFlag(memory.id, !memory.is_flagged_unimportant)}
-            className="p-1 rounded hover:opacity-70 transition-opacity"
+            className="nm-btn p-1.5 rounded-lg"
             title={memory.is_flagged_unimportant ? 'Unflag' : 'Mark unimportant'}
           >
             <ArrowDown
-              size={14}
-              style={{
-                color: memory.is_flagged_unimportant ? 'var(--warning)' : 'var(--text-muted)',
-              }}
+              size={12}
+              style={{ color: memory.is_flagged_unimportant ? 'var(--warning)' : 'var(--text-muted)' }}
             />
           </button>
           <button
             onClick={() => onDelete(memory.id)}
-            className="p-1 rounded hover:opacity-70 transition-opacity"
+            className="nm-btn p-1.5 rounded-lg"
             title="Delete memory"
           >
-            <Trash2 size={14} style={{ color: 'var(--danger)' }} />
+            <Trash2 size={12} style={{ color: 'var(--danger)' }} />
           </button>
         </div>
       </div>
 
-      <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-        {memory.content}
+      {/* ── Row 2: memory content ── */}
+      <p
+        className="text-sm leading-relaxed mb-2 font-medium"
+        style={{ color: 'var(--text-primary)' }}
+      >
+        "{memory.content}"
       </p>
 
+      {/* ── Conflict detail ── */}
+      {conflictContents.map((txt, i) => (
+        <p
+          key={i}
+          className="text-[11px] mb-2 leading-snug"
+          style={{ color: 'var(--danger)' }}
+        >
+          conflicts with → "{txt}"
+        </p>
+      ))}
+      {/* Fallback if conflict IDs exist but content not yet loaded */}
+      {conflictCount > 0 && conflictContents.length === 0 && (
+        <p className="text-[11px] mb-2" style={{ color: 'var(--danger)' }}>
+          conflicts with {conflictCount} other {conflictCount === 1 ? 'memory' : 'memories'}
+        </p>
+      )}
+
+      {/* ── Decay bar ── */}
       <DecayBar score={memory.decay_score} isPinned={memory.is_pinned} />
 
-      <div className="flex justify-between mt-1">
+      {/* ── Footer ── */}
+      <div className="flex justify-between mt-1.5">
         <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-          accessed {memory.access_count}x
+          accessed {memory.access_count}×
         </span>
         <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-          {timeAgo}
+          {timeAgo(memory.created_at)}
         </span>
       </div>
     </div>
   );
-}
-
-function getTimeAgo(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
 }

@@ -9,7 +9,7 @@ interface WSMessage {
 
 export function useWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimer = useRef<number>();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
   const { addMemory, updateMemory, removeMemory } = useMemoryStore();
 
   useEffect(() => {
@@ -20,9 +20,7 @@ export function useWebSocket() {
       const ws = new WebSocket(`${protocol}//${window.location.host}/ws/memories`);
       wsRef.current = ws;
 
-      ws.onopen = () => {
-        attempt = 0;
-      };
+      ws.onopen = () => { attempt = 0; };
 
       ws.onmessage = (event) => {
         const msg: WSMessage = JSON.parse(event.data);
@@ -48,12 +46,11 @@ export function useWebSocket() {
       ws.onclose = () => {
         attempt++;
         const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
-        reconnectTimer.current = window.setTimeout(connect, delay);
+        reconnectTimer.current = setTimeout(connect, delay);
       };
     }
 
     connect();
-
     return () => {
       wsRef.current?.close();
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);

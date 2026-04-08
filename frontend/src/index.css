@@ -2,51 +2,138 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Light theme ─────────────────────────────────────────────────────────── */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f1f5f9;
-  --bg-tertiary: #e2e8f0;
-  --bg-card: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border: #e2e8f0;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --success: #22c55e;
-  --chat-user: #6366f1;
-  --chat-assistant: #1e293b;
+  --nm-base:          #dde4f0;
+  --nm-card:          #dde4f0;
+  --nm-shadow-light:  rgba(255, 255, 255, 0.92);
+  --nm-shadow-dark:   rgba(163, 177, 198, 0.75);
+  --nm-inset-light:   rgba(255, 255, 255, 0.7);
+  --nm-inset-dark:    rgba(163, 177, 198, 0.6);
+
+  --bg-primary:    #dde4f0;
+  --bg-secondary:  #e6ecf7;
+  --bg-tertiary:   #cdd5e5;
+  --bg-card:       #dde4f0;
+  --text-primary:  #1a2035;
+  --text-secondary:#3d4f6e;
+  --text-muted:    #7a8fb0;
+  --border:        rgba(163,177,198,0.35);
+  --accent:        #6366f1;
+  --accent-hover:  #4f46e5;
+  --danger:        #ef4444;
+  --warning:       #f59e0b;
+  --success:       #22c55e;
+  --chat-user:     #6366f1;
 }
 
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
 .dark {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-card: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
-  --border: #334155;
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --danger: #f87171;
-  --warning: #fbbf24;
-  --success: #4ade80;
-  --chat-user: #818cf8;
-  --chat-assistant: #334155;
+  --nm-base:          #1a2035;
+  --nm-card:          #1a2035;
+  --nm-shadow-light:  rgba(255, 255, 255, 0.055);
+  --nm-shadow-dark:   rgba(0, 0, 0, 0.55);
+  --nm-inset-light:   rgba(255, 255, 255, 0.04);
+  --nm-inset-dark:    rgba(0, 0, 0, 0.45);
+
+  --bg-primary:    #1a2035;
+  --bg-secondary:  #202840;
+  --bg-tertiary:   #28304d;
+  --bg-card:       #1a2035;
+  --text-primary:  #e8edf8;
+  --text-secondary:#a8b8d8;
+  --text-muted:    #5a6a88;
+  --border:        rgba(255,255,255,0.07);
+  --accent:        #818cf8;
+  --accent-hover:  #6366f1;
+  --danger:        #f87171;
+  --warning:       #fbbf24;
+  --success:       #4ade80;
+  --chat-user:     #818cf8;
 }
 
+/* ── Neomorphism utility classes ─────────────────────────────────────────── */
+.nm-card {
+  background: var(--nm-card);
+  box-shadow:
+    -6px -6px 14px var(--nm-shadow-light),
+     6px  6px 14px var(--nm-shadow-dark);
+  border: none;
+}
+
+.nm-card-conflict {
+  background: var(--nm-card);
+  box-shadow:
+    -6px -6px 14px var(--nm-shadow-light),
+     6px  6px 14px var(--nm-shadow-dark),
+     0 0 0 1.5px var(--danger);
+}
+
+.nm-card-pinned {
+  background: var(--nm-card);
+  box-shadow:
+    -6px -6px 14px var(--nm-shadow-light),
+     6px  6px 14px var(--nm-shadow-dark),
+     0 0 0 1.5px var(--success);
+}
+
+.nm-inset {
+  box-shadow:
+    inset -4px -4px 9px var(--nm-inset-light),
+    inset  4px  4px 9px var(--nm-inset-dark);
+}
+
+.nm-btn {
+  background: var(--nm-card);
+  box-shadow:
+    -3px -3px 7px var(--nm-shadow-light),
+     3px  3px 7px var(--nm-shadow-dark);
+  transition: box-shadow 0.15s ease;
+}
+
+.nm-btn:hover {
+  box-shadow:
+    -2px -2px 5px var(--nm-shadow-light),
+     2px  2px 5px var(--nm-shadow-dark);
+}
+
+.nm-btn:active {
+  box-shadow:
+    inset -2px -2px 5px var(--nm-inset-light),
+    inset  2px  2px 5px var(--nm-inset-dark);
+}
+
+.nm-input {
+  background: var(--nm-card);
+  box-shadow:
+    inset -3px -3px 7px var(--nm-inset-light),
+    inset  3px  3px 7px var(--nm-inset-dark);
+  border: none;
+  outline: none;
+}
+
+.nm-input:focus {
+  box-shadow:
+    inset -3px -3px 7px var(--nm-inset-light),
+    inset  3px  3px 7px var(--nm-inset-dark),
+    0 0 0 2px var(--accent);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.25s, color 0.25s;
 }
 
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--bg-tertiary) transparent;
 }
+
+/* Subtle scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
