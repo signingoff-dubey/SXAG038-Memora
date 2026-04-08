@@ -1,4 +1,4 @@
-# Memora v4.0 — Context-Aware AI Agent with Persistent Memory
+# Memora v4.5 — Context-Aware AI Agent with Persistent Memory
 
 Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
@@ -6,52 +6,66 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 
 ## Release Notes
 
+### v4.5
+#### 🧠 Session-Isolated Memory + Bug Fixes
+
+- **Session-isolated retrieval** — long-term (cross-session) memories and session-only memories are now properly scoped. The retrieval pipeline filters by `session_id` so session-only facts from session A are never injected into session B.
+- **Memory type badges** — every memory card now shows an explicit type tag: `🧠 long-term` (Brain icon, persistent across all sessions) or `⏱ session-only` (Clock icon, scoped to one session).
+- **Memory Inspector labels** — sections renamed to "Long-term memories" and "Session-only context" for clarity.
+- **ChromaDB metadata sync** — `is_session_only` and `session_id` are now kept in sync in the vector store on every update (content edits, importance changes, session-type toggles). Previously these fields could fall out of sync after a PATCH, causing silent retrieval failures.
+- **Memory write merge path** — `session_id` is now included in ChromaDB metadata when two similar memories are merged, fixing a case where merged memories became invisible to session-scoped queries.
+- **Race condition fix** — the `useMemories` hook no longer issues its own unconditional fetch on mount. All memory fetching is session-aware and owned by `App.tsx`.
+- **WebSocket local mode** — WebSocket now correctly connects to `ws://127.0.0.1:8000` when Local Backend mode is active, instead of trying to reach the Netlify host.
+- **Netlify build fix** — `netlify.toml` corrected to use `base = "frontend"` so the Vite build runs from the right directory.
+- **Loading state** — `isLoadingMemories` flag added to the store so the UI can indicate when a memory fetch is in flight.
+
 ### v4.0
 #### ☁️ Hybrid Mode (Cloud UI + Local AI)
 
-You can use the beautiful hosted interface while keeping your data and AI processing on your local machine:
+You can use the hosted interface while keeping your data and AI processing on your local machine:
 
-1.  **Launch Brain**: Run [**server.bat**](server.bat) on your computer.
-2.  **Access UI**: Visit [**memora-kabir.netlify.app**](https://memora-kabir.netlify.app).
-3.  **Automatic Sync**: The UI will detect your local server (indicated by a green 🟢 badge) and immediately start using your system's GPU and memories.
+1. **Launch Brain**: Run [**server.bat**](server.bat) on your computer.
+2. **Access UI**: Visit [**memora-kabir.netlify.app**](https://memora-kabir.netlify.app).
+3. **Enable Local Backend**: In Settings, toggle "Local Backend" on. The green 🟢 badge confirms the connection.
 
-This gives you the best of both worlds: a premium cloud experience with 100% local privacy and power.
+- One-click startup: `run.bat` starts Ollama, Backend, and Frontend and opens browser tabs automatically.
+- Ollama integration: `ollama serve` is started automatically by the startup script.
+- Security: authentication middleware, per-memory authorization, rate limiting, prompt-injection mitigation, per-user WebSocket scoping.
+- Performance: DB indexes on Memory model; LLM response caching.
+- Frontend: memory leak fixes, improved hook dependencies.
+- Infrastructure: cross-platform networking on `127.0.0.1`; enhanced Pydantic data validation.
 
-- One-Click Automated Startup: run.bat now starts Ollama, Backend, and Frontend, and automatically opens browser tabs for both the app and API documentation.
-- Ollama integration: ollama serve is started automatically by the startup script if Ollama is installed.
-- Security enhancements: added authentication middleware, per-memory authorization checks, rate limiting, prompt-injection mitigation, per-user WebSocket scoping.
-- Performance enhancements: DB indexes on Memory model; LLM response caching.
-- Frontend improvements: memory leak fixes; improved hook dependencies.
-- Infrastructure updates: cross-platform networking defaults; enhanced data validation via Pydantic updates.
+---
 
 ## Features
 
 ### Memory System
 - **Persistent cross-session memory** — remembers user facts, preferences, and context across conversations
-- **Session-only memories** — transient facts (one-off queries, task context) are labelled `session-only` with a Clock badge; they decay 10× faster and are never injected into future sessions
-- **Smart importance scoring** — single LLM pass classifies AND scores memories; task requests ("write me code", "explain X") are excluded outright; identity facts (name, profession) score 9-10; session-only memories are capped at importance 3
+- **Session-isolated memories** — transient facts from a conversation are labelled `session-only`, scoped to that session only, decay 10× faster, and are never injected into future sessions
+- **Smart importance scoring** — single LLM pass classifies AND scores memories; task requests ("write me code", "explain X") are excluded outright; identity facts (name, profession) score 9–10; session-only memories are capped at importance 3
 - **Semantic deduplication** — "prefers dark mode" and "likes dark interfaces" are the same belief
 - **Contradiction detection** — NLI model flags conflicting beliefs; LLM adjudicates
 - **Ebbinghaus decay** — memories fade naturally; pinned memories never decay
 - **RAG verification pass** — after every LLM response, a second pass checks whether the reply contradicts any retrieved memories and self-corrects if needed
 
 ### Memory Inspector (right panel)
-- **Grouped sections** — Pinned / Conflicts / Cross-session / Session-only, each collapsible
+- **Grouped sections** — Pinned / Conflicts / Long-term memories / Session-only context, each collapsible
+- **Memory type badges** — `🧠 long-term` (Brain, persistent) or `⏱ session-only` (Clock, scoped) shown on every card
 - **Importance slider** — click any importance chip to open an inline 1–10 slider; hit Save to persist
 - **Search** — live filter across all memory content
 - **Export / Import** — download all memories as JSON or import a backup file
 - **User memory controls** — pin (keep forever), flag (safe to auto-delete), or manually delete any memory
 
 ### Chat
-- **Markdown rendering** — assistant responses render full GFM markdown (headers, lists, tables, blockquotes, horizontal rules, bold/italic, links)
+- **Markdown rendering** — assistant responses render full GFM markdown (headers, lists, tables, blockquotes, bold/italic, links)
 - **Syntax-highlighted code blocks** — language header bar with one-click copy; line numbers for blocks > 4 lines; light/dark theme aware
 - **Image / vision support** — attach PNG/JPG/GIF/WebP images; `+` button activates for vision-capable models (llava, llama3.2-vision, moondream, etc.)
 - **Auto-capitalise** — textarea auto-capitalises the first letter
-- **Cursor tracking** — focus always returns to the input box after sending a message
+- **Cursor tracking** — focus always returns to the input box after sending
 
 ### Settings
 - **Who Am I profile** — fill a free-text description; saved to `backend/data/context_<user_id>.json` and injected into every system prompt
-- **Analytics dashboard** — shows Total / Pinned / Conflicts / Session-only counts, average importance, average memory health, and the top 3 memories by importance
+- **Analytics dashboard** — Total / Pinned / Conflicts / Session-only counts, average importance, average memory health, top 3 memories by importance
 - **Clear chat history** — wipes all sessions from localStorage with a confirmation step
 
 ### Models
@@ -59,16 +73,10 @@ This gives you the best of both worlds: a premium cloud experience with 100% loc
 - **Vision badge** — 👁 shown on models that support image input
 - **Multi-model support** — choose any locally installed Ollama model, or connect any OpenAI-compatible API with a custom key
 
-### Infrastructure (New in v4.0)
-- **One-Click Automated Startup** — `run.bat` initializes Ollama, Backend, and Frontend, then automatically launches browser tabs for both the app and API documentation.
-- **Cross-Platform Network Stability** — standardized local networking on `127.0.0.1` to resolve IPv6/IPv4 resolution conflicts (`ECONNREFUSED`).
-- **Resilient Data Validation** — enhanced Pydantic schema architecture for robust handling of date-time objects and mixed data types.
-
-### RAG Pipeline (`rag_assistant/`)
-- **`MemoraRAGPipeline`** — reusable Python class backed by Memora's own services (same all-MiniLM-L6-v2 embeddings, shared ChromaDB collection, same Ollama/OpenAI-compatible LLM client)
-- **One source of truth** — all retrieval and generation uses the backend's service modules; no duplicate embedding or DB connections
-- `add_memory()` — real-time indexing of new facts into ChromaDB
-- `get_stats()` — vector store document count + active model info
+### Infrastructure
+- **One-click startup** — `run.bat` initialises Ollama, Backend, and Frontend, then opens browser tabs.
+- **Cross-platform network stability** — standardised on `127.0.0.1` to avoid IPv6/IPv4 `ECONNREFUSED` issues.
+- **Netlify deployment** — frontend auto-deploys to Netlify on push; backend runs locally via `server.bat`; Local Backend toggle in Settings routes all traffic to `localhost:8000`.
 
 ---
 
@@ -99,43 +107,57 @@ memora/
 │   ├── config.py                 # pydantic-settings env config
 │   ├── database.py               # SQLAlchemy async engine + safe migrations
 │   ├── requirements.txt
+│   ├── .env.example
 │   ├── data/                     # ← auto-created at runtime
 │   │   └── context_default.json  # persisted user profile (per user_id)
 │   ├── models/
-│   │   ├── memory.py             # Memory ORM model (incl. is_session_only)
+│   │   ├── memory.py             # Memory ORM (is_session_only, session_id, decay fields)
 │   │   └── session.py            # Session ORM model
 │   ├── schemas/
-│   │   ├── memory.py             # Pydantic memory schemas (incl. importance update)
+│   │   ├── memory.py             # Pydantic memory schemas
 │   │   └── chat.py               # ChatRequest / ChatResponse
 │   ├── routers/
 │   │   ├── chat.py               # POST /api/chat (context + memories + RAG verify)
-│   │   ├── memories.py           # CRUD /api/memories (incl. importance + session-only PATCH)
+│   │   ├── memories.py           # CRUD /api/memories (session_id filtering + full ChromaDB sync)
 │   │   ├── context.py            # GET/POST /api/context
 │   │   ├── websocket.py          # WS /ws/memories
 │   │   └── health.py             # GET /api/health, /api/models
 │   └── services/
 │       ├── llm.py                # Ollama + OpenAI-compatible + vision + RAG verify
 │       ├── embeddings.py         # sentence-transformers wrapper
-│       ├── vector_store.py       # ChromaDB wrapper
-│       ├── memory_writer.py      # write pipeline (classify+score → embed → store)
-│       ├── memory_retriever.py   # retrieval + re-ranking + decay
-│       ├── contradiction.py      # NLI cross-encoder
+│       ├── vector_store.py       # ChromaDB wrapper (add/query/update/update_metadata/delete)
+│       ├── memory_writer.py      # write pipeline (classify+score → embed → dedup → store)
+│       ├── memory_retriever.py   # retrieval + session filtering + re-ranking + decay
+│       ├── contradiction.py      # NLI cross-encoder contradiction detection
 │       ├── curator.py            # decay computation + merge + cleanup
 │       ├── context_manager.py    # read/write context JSON files
 │       └── broadcaster.py        # WebSocket connection manager
 ├── rag_assistant/
-│   └── chains/
-│       └── rag_chain.py          # MemoraRAGPipeline — reusable RAG class
+│   ├── llm_config.py             # LLM client config for the RAG pipeline
+│   ├── chains/
+│   │   └── rag_chain.py          # MemoraRAGPipeline — reusable RAG class
+│   ├── embeddings/
+│   │   └── embedding_service.py  # embedding wrapper used by the RAG pipeline
+│   ├── memory/
+│   │   └── conversation_memory.py # conversation history management
+│   └── vectorstore/
+│       └── vector_store.py       # vector store interface for the RAG pipeline
+├── run.bat                       # one-click startup (Ollama + backend + frontend)
+├── server.bat                    # backend-only startup (for hybrid Netlify mode)
+├── netlify.toml                  # Netlify build config (base = frontend)
 └── frontend/
+    ├── index.html
+    ├── vite.config.ts
+    ├── package.json
     └── src/
-        ├── App.tsx               # layout + auto session init + model detection
-        ├── api/client.ts         # axios wrapper + all API types
-        ├── store/memoryStore.ts  # Zustand store (sessions, model, profile, installedModels)
+        ├── App.tsx               # layout + session init + session-scoped memory fetch
+        ├── api/client.ts         # axios wrapper + all API types (session_id param on list)
+        ├── store/memoryStore.ts  # Zustand store (sessions, memories, isLoadingMemories)
         ├── utils/visionModels.ts # pattern-match vision capability detection
         ├── hooks/
         │   ├── useChat.ts        # send message + image forwarding
         │   ├── useMemories.ts    # pin/flag/delete/updateImportance/toggleSessionOnly
-        │   └── useWebSocket.ts   # live memory updates
+        │   └── useWebSocket.ts   # live memory updates (local-backend aware)
         └── components/
             ├── Chat/
             │   ├── ChatWindow.tsx
@@ -143,13 +165,13 @@ memora/
             │   └── ChatInput.tsx       # textarea + image attach + ModelSelector
             ├── MemoryInspector/
             │   ├── MemoryInspector.tsx # grouped sections + search + export/import
-            │   ├── MemoryCard.tsx      # importance slider + session-only badge
+            │   ├── MemoryCard.tsx      # long-term/session-only badge + importance slider
             │   ├── DecayBar.tsx
             │   ├── ConflictBadge.tsx
             │   └── ImportanceChip.tsx
             └── Layout/
                 ├── ChatHistory.tsx     # left sidebar: session list
-                ├── ModelSelector.tsx   # model dropdown + installed badges + custom API
+                ├── ModelSelector.tsx   # model dropdown + vision badges + custom API
                 ├── SettingsModal.tsx   # Profile tab + Analytics dashboard
                 └── ThemeToggle.tsx
 ```
@@ -166,8 +188,6 @@ memora/
 
 ### Quick Start (Recommended)
 
-Simply run the automated startup script in the root directory:
-
 ```bash
 run.bat
 ```
@@ -176,7 +196,14 @@ This will:
 1. Check for Python and Node.js.
 2. Install backend and frontend dependencies.
 3. Start Ollama, the Backend, and the Frontend.
-4. **Automatically open** the application and API documentation in your browser.
+4. Automatically open the app and API docs in your browser.
+
+### Hybrid Mode (Netlify UI + local backend)
+
+1. Push code to GitHub — Netlify auto-deploys the frontend.
+2. Run `server.bat` on your machine to start the local backend.
+3. Open the Netlify URL → Settings → enable **Local Backend**.
+4. All API and WebSocket traffic is routed to `http://127.0.0.1:8000`.
 
 ---
 
@@ -188,7 +215,7 @@ This will:
 # Text model (required)
 ollama pull qwen2.5-coder:7b
 
-# Vision model (optional — enables image uploads)
+# Vision model (optional)
 ollama pull llava:7b
 ```
 
@@ -224,8 +251,8 @@ User message
     │                      { "user_profile": "I'm Kabir, a developer..." }
     ▼
 2. Retrieve memories  ─── ChromaDB vector search → re-ranked top-5
+    │                      filtered by session_id (session-only) or global (long-term)
     │                      "- prefers dark mode (importance: 8.0)"
-    │                      (session-only memories excluded from cross-session retrieval)
     ▼
 3. Build system prompt ── profile + memories injected before every reply
     │
@@ -244,11 +271,12 @@ conversation turn
     ▼
 classify_and_score_memories()   ← single LLM call
     │  returns: [{content, importance, is_session_only}]
-    │  task requests → excluded entirely
-    │  session-only  → capped at importance 3, decay 10× faster
-    │  identity      → importance 9-10, persists across all sessions
+    │  task requests        → excluded entirely
+    │  session-only facts   → capped at importance 3, decay 10× faster
+    │  identity facts       → importance 9-10, persists across all sessions
     ▼
-embed + deduplicate + contradiction check + store
+embed → deduplicate → contradiction check → store
+    (is_session_only + session_id written to both SQLite and ChromaDB)
 ```
 
 ---
@@ -268,20 +296,21 @@ POST /api/chat
   "model": "qwen2.5-coder:7b",
   "custom_base_url": "https://api.openai.com/v1",
   "custom_api_key": "sk-...",
-  "images": ["base64string", "..."]
+  "images": ["base64string"]
 }
 ```
 
-Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs OpenAI-compatible endpoints and formats the payload accordingly.
+Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs OpenAI-compatible endpoints and formats accordingly.
 
 ### Memories
 
 | Method | Path | Action |
 |--------|------|--------|
-| GET | `/api/memories?user_id=default` | List all |
+| GET | `/api/memories?user_id=default` | List global memories only |
+| GET | `/api/memories?user_id=default&session_id=<uuid>` | List global + session-scoped memories |
 | GET | `/api/memories/{id}` | Get one |
 | PATCH | `/api/memories/{id}` | Update pin / flag / content / importance / session-only |
-| DELETE | `/api/memories/{id}` | Delete |
+| DELETE | `/api/memories/{id}` | Delete from SQLite + ChromaDB |
 
 **PATCH body** (all fields optional):
 ```json
@@ -293,6 +322,8 @@ Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs
   "is_session_only": false
 }
 ```
+
+All PATCH operations keep ChromaDB metadata fully in sync (including `is_session_only` and `session_id`).
 
 ### Context Profile
 
@@ -315,14 +346,14 @@ Returns `{ "user_id", "user_profile", "updated_at" }`.
 GET /api/models   →  { "models": [{ "name": "llava:7b", "size": ... }] }
 ```
 
-Used by the frontend on page load to detect installed models and auto-select.
-
 ### WebSocket
 
 ```
-WS /ws/memories
+WS /ws/memories?user_id=default
 ```
 Events: `memory_created`, `memory_updated`, `memory_deleted`, `contradiction_detected`
+
+Connects to `ws://127.0.0.1:8000` when Local Backend mode is active.
 
 ### Health
 
@@ -336,11 +367,12 @@ GET /api/health   →  { "status": "ok", "ollama": "connected", "model": "..." }
 
 | Control | Action |
 |---------|--------|
+| `🧠 long-term` badge | Memory persists across all sessions |
+| `⏱ session-only` badge | Memory is scoped to one session; decays 10× faster |
 | 📌 Pin | Locks memory permanently — never decays, never auto-deleted |
-| Importance chip (click) | Opens inline 1–10 slider to adjust importance and persist |
+| Importance chip (click) | Opens inline 1–10 slider; hit Save to persist |
 | ⬇ Flag | Marks as unimportant — lower deletion threshold, safe for auto-cleanup |
-| 🕐 Session-only badge | Identifies session-scoped memories; click refresh icon to toggle |
-| 🗑 Delete | Immediate manual deletion from SQLite + ChromaDB |
+| 🗑 Delete | Immediate deletion from SQLite + ChromaDB |
 
 ---
 
@@ -352,12 +384,12 @@ The right panel groups memories into four sections:
 |---------|----------|
 | **Pinned** | Manually pinned memories (never decay) |
 | **Conflicts** | Memories flagged with contradictions — needs resolution |
-| **Cross-session** | Persistent long-term memories (identity, preferences, skills) |
-| **Session only** | Transient facts from the current conversation; fade 10× faster |
+| **Long-term memories** | Persistent facts (identity, preferences, skills) — shared across all sessions |
+| **Session-only context** | Transient facts from the current conversation; fade 10× faster; scoped to this session |
 
-Use the **search bar** (magnifying glass icon) to filter across all memory content.
-Use the **export** button (download icon) to save all memories as a JSON file.
-Use the **import** button (upload icon) to restore memories from a JSON backup.
+Use the **search bar** to filter across all memory content.
+Use the **export** button to save all memories as a JSON file.
+Use the **import** button to restore memories from a JSON backup.
 
 ---
 
@@ -366,9 +398,9 @@ Use the **import** button (upload icon) to restore memories from a JSON backup.
 Click the **`+`** button in the chat input to attach images.
 
 - If the selected model supports vision (llava, llama3.2-vision, moondream, qwen2-vl, gemma3, etc.), images are sent with the message.
-- If the model does **not** support vision, a warning banner appears instead.
+- If the model does **not** support vision, a warning banner appears.
 - Vision capability is detected by model name pattern — no extra API calls needed.
-- Custom API connections (OpenAI, Groq, etc.) are assumed to be vision-capable.
+- Custom API connections (OpenAI, Groq, etc.) are assumed vision-capable.
 
 **Vision models you can `ollama pull`:**
 
@@ -399,11 +431,11 @@ result = await pipeline.query(MemoraRAGQuery(
 ))
 
 print(result.answer)
-print(result.sources)         # [{content, score, metadata}, ...]
-print(result.correction_applied)  # True if verifier rewrote the answer
+print(result.sources)              # [{content, score, metadata}, ...]
+print(result.correction_applied)   # True if verifier rewrote the answer
 ```
 
-It uses the **same** all-MiniLM-L6-v2 embeddings, the **same** ChromaDB collection, and the **same** LLM client as the backend — one source of truth for all retrieval and generation.
+Uses the same `all-MiniLM-L6-v2` embeddings, the same ChromaDB collection, and the same LLM client as the backend — one source of truth for all retrieval and generation.
 
 ---
 
@@ -421,28 +453,28 @@ It uses the **same** all-MiniLM-L6-v2 embeddings, the **same** ChromaDB collecti
 | `retrieval_candidates` | 20 | Top-N from ChromaDB before re-rank |
 | `context_memories` | 5 | Memories injected into system prompt |
 
-Override any of these via environment variables or a `.env` file in `backend/`.
+Override any via environment variables or a `.env` file in `backend/`.
 
 ---
 
 ## Demo Scenarios
 
-1. **Set your profile** — open Settings (⚙ gear icon), fill "Who am I?", save. Now every response is personalised without you re-explaining yourself.
+1. **Set your profile** — open Settings (⚙), fill "Who am I?", save. Every response is now personalised without re-explaining yourself.
 
-2. **Cross-session memory** — tell Memora something ("I'm learning Rust"), close the tab, reopen. Start a new chat — it still knows.
+2. **Cross-session memory** — tell Memora something ("I'm learning Rust"), close the tab, reopen in a new session. It still knows.
 
-3. **Analytics** — open Settings → Analytics tab to see total memories, pinned count, conflict count, session-only count, average importance, average health, and your top 3 memories.
+3. **Session isolation** — open two sessions. A session-only memory from session A (e.g. "help me sort a list") is never visible in session B.
 
-4. **Image analysis** — switch to `llava:7b` in the model selector, click `+`, upload a screenshot or photo, ask "what's in this image?".
+4. **Analytics** — open Settings → Analytics to see total, pinned, conflict, session-only counts, average importance, average health, and top 3 memories.
 
-5. **Contradiction detection** — say "I love spicy food", then "I hate anything spicy". Watch the red conflict badge appear in the Memory Inspector under the Conflicts section.
+5. **Image analysis** — switch to `llava:7b`, click `+`, upload a screenshot, ask "what's in this image?".
 
-6. **Importance tuning** — click the importance chip on any memory card to open the slider; drag it, hit Save. The new score immediately affects retrieval ranking.
+6. **Contradiction detection** — say "I love spicy food", then "I hate anything spicy". Watch the red conflict badge appear in the Conflicts section.
 
-7. **Memory health** — flag a memory as unimportant. Come back after a few days and watch its decay bar shrink. The curator background job will eventually auto-delete it.
+7. **Importance tuning** — click the importance chip on any memory card, drag the slider, hit Save. New score immediately affects retrieval ranking.
 
-8. **Session-only vs cross-session** — ask Memora to "write a Python script to sort a list". The task request is excluded from memory entirely. Mention "I really enjoy Python" — that gets stored as a cross-session preference at importance 7.
+8. **Memory health** — flag a memory as unimportant. Watch its decay bar shrink over time; the curator job will eventually auto-delete it.
 
-9. **Custom API** — click the model selector → "Custom API key…", paste an OpenAI (or Groq/Together/etc.) base URL and key. The entire memory + context pipeline still runs locally; only the final LLM call goes to the cloud.
+9. **Custom API** — in the model selector, enter an OpenAI/Groq/Together base URL and key. The memory pipeline still runs locally; only the final LLM call goes to the cloud.
 
-10. **Export / import memories** — use the download button in the Memory Inspector to backup all memories, then restore them later with the upload button.
+10. **Export / import** — download all memories as JSON from the Memory Inspector, then restore them with the upload button.
