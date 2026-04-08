@@ -125,6 +125,7 @@ async def _store_single_memory(
                             if memory.created_at
                             else "",
                             "is_session_only": str(memory.is_session_only),
+                            "session_id": memory.session_id or "",
                         },
                     )
                     await manager.broadcast("memory_updated", memory.to_dict())
@@ -154,6 +155,7 @@ async def _store_single_memory(
             "importance": importance,
             "created_at": memory.created_at.isoformat() if memory.created_at else "",
             "is_session_only": str(is_session_only),
+            "session_id": session_id or "",
         },
     )
 

@@ -76,8 +76,20 @@ export function MemoryCard({
       {/* ── Row 1: badges + actions ── */}
       <div className="flex items-center justify-between mb-2 gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
-          {/* Session-only badge */}
-          {memory.is_session_only && (
+          {/* Memory Type Tag */}
+          {!memory.is_session_only ? (
+            <span
+              className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold"
+              style={{
+                background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
+                color: 'var(--accent)',
+                border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
+              }}
+              title="This is a persistent memory shared across all sessions"
+            >
+              <Brain size={9} /> long-term
+            </span>
+          ) : (
             <span
               className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold"
               style={{
@@ -87,7 +99,7 @@ export function MemoryCard({
               }}
               title="This memory is session-specific and will not carry to future chats"
             >
-              <Clock size={9} /> session only
+              <Clock size={9} /> session-only
             </span>
           )}
 

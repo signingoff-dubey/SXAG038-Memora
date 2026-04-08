@@ -72,7 +72,11 @@ export const chatApi = {
 };
 
 export const memoriesApi = {
-  list: (userId = 'default') => api.get<MemoryData[]>(`/memories?user_id=${userId}`),
+  list: (userId = 'default', sessionId?: string) => {
+    const params = new URLSearchParams({ user_id: userId });
+    if (sessionId) params.append('session_id', sessionId);
+    return api.get<MemoryData[]>(`/memories?${params.toString()}`);
+  },
   get: (id: string) => api.get<MemoryData>(`/memories/${id}`),
   update: (id: string, data: MemoryUpdate) => api.patch<MemoryData>(`/memories/${id}`, data),
   delete: (id: string) => api.delete(`/memories/${id}`),

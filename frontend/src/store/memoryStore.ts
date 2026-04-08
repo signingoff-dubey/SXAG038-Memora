@@ -84,6 +84,7 @@ interface MemoryStore {
 
   // Memories (from backend)
   memories: MemoryData[];
+  isLoadingMemories: boolean;
 
   // ── Actions ──────────────────────────────────────────────────────────────
   // Sessions
@@ -119,6 +120,7 @@ interface MemoryStore {
 
   // Memories
   setMemories: (memories: MemoryData[]) => void;
+  fetchMemories: (userId?: string, sessionId?: string) => Promise<void>;
   addMemory: (memory: MemoryData) => void;
   updateMemory: (memory: MemoryData) => void;
   removeMemory: (id: string) => void;
@@ -142,6 +144,7 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   localBackendActive: LS.get<boolean>(LOCAL_BA_KEY, false),
 
   memories: [],
+  isLoadingMemories: false,
 
   // ── Sessions ─────────────────────────────────────────────────────────────
 
@@ -290,10 +293,30 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
 
   setMemories: (memories) => set({ memories }),
 
+  fetchMemories: async (userId = 'default', sessionId?: string) => {
+    set({ isLoadingMemories: true });
+    try {
+      const resp = await import('../api/client').then(m => m.memoriesApi.list(userId, sessionId));
+      set({ memories: resp.data });
+    } catch (error) {
+      console.error('Failed to fetch memories:', error);
+    } finally {
+      set({ isLoadingMemories: false });
+    }
+  },
+
   addMemory: (memory) =>
-    set((state) => ({
-      memories: [memory, ...state.memories.filter((m) => m.id !== memory.id)],
-    })),
+    set((state) => {
+      // Logic for adding a memory based on session isolation:
+      // 1. If global (not session-only), always add.
+      // 2. If session-only, only add if it matches the current active session.
+      if (memory.is_session_only && memory.session_id !== state.activeSessionId) {
+        return state; 
+      }
+      return {
+        memories: [memory, ...state.memories.filter((m) => m.id !== memory.id)],
+      };
+    }),
 
   updateMemory: (memory) =>
     set((state) => ({

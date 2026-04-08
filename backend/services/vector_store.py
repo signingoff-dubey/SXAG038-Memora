@@ -59,3 +59,12 @@ def update_memory(memory_id: str, embedding: list[float], content: str, metadata
         documents=[content],
         metadatas=[metadata],
     )
+
+
+def update_memory_metadata(memory_id: str, metadata: dict):
+    """Update only the metadata for an existing memory without changing its embedding."""
+    collection = get_collection()
+    collection.update(
+        ids=[memory_id],
+        metadatas=[metadata],
+    )

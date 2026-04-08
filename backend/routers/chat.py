@@ -62,7 +62,7 @@ async def chat(
     session_id = chat_request.session_id or str(uuid.uuid4())
     model = chat_request.model or settings.ollama_model
 
-    memories = await retrieve_memories(user_message, chat_request.user_id, db)
+    memories = await retrieve_memories(user_message, chat_request.user_id, db, session_id)
 
     memory_context = ""
     memory_ids = []

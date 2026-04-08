@@ -15,13 +15,33 @@ def _utcnow() -> datetime:
     return datetime.utcnow()
 
 
-async def retrieve_memories(query: str, user_id: str, db: AsyncSession) -> list[dict]:
+async def retrieve_memories(
+    query: str, user_id: str, db: AsyncSession, session_id: str | None = None
+) -> list[dict]:
     embedding = await asyncio.to_thread(embeddings.embed_text, query)
+
+    # Filter: (user_id match) AND (Either is_session_only is "False" OR session_id matches)
+    where_filter = {"user_id": user_id}
+    if session_id:
+        where_filter = {
+            "$and": [
+                {"user_id": user_id},
+                {
+                    "$or": [
+                        {"is_session_only": "False"},
+                        {"session_id": session_id},
+                    ]
+                },
+            ]
+        }
+    else:
+        # Default: only retrieve global memories
+        where_filter = {"$and": [{"user_id": user_id}, {"is_session_only": "False"}]}
 
     results = vector_store.query_similar(
         embedding,
         n_results=settings.retrieval_candidates,
-        where={"user_id": user_id},
+        where=where_filter,
     )
 
     if not results["ids"] or not results["ids"][0]:
