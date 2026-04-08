@@ -1,0 +1,27 @@
+from pydantic import BaseModel
+
+
+class MemoryResponse(BaseModel):
+    id: str
+    user_id: str
+    session_id: str | None = None
+    content: str
+    importance: float
+    decay_score: float
+    lambda_rate: float
+    is_pinned: bool
+    is_flagged_unimportant: bool
+    contradiction_with: list[str] = []
+    access_count: int
+    created_at: str | None = None
+    last_accessed_at: str | None = None
+    updated_at: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class MemoryUpdate(BaseModel):
+    is_pinned: bool | None = None
+    is_flagged_unimportant: bool | None = None
+    content: str | None = None
