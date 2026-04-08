@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, User, Save, CheckCircle2, AlertCircle, Loader2, FileText, Trash2, BarChart2 } from 'lucide-react';
+import axios from 'axios';
 import { contextApi } from '../../api/client';
 import { useMemoryStore } from '../../store/memoryStore';
 
@@ -65,8 +66,9 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const checkConnectivity = async () => {
     setCheckingHealth(true);
     try {
-      // Use the base axios instance to hit /api/health
-      const resp = await contextApi.getHealth(); 
+      // Always hit local backend directly — Ollama only exists locally.
+      // Bypass the API interceptor to avoid Netlify's /api/* → 404 redirect.
+      const resp = await axios.get('http://127.0.0.1:8000/api/health', { timeout: 4000 });
       setHealthStatus(resp.data);
     } catch (e: any) {
       setHealthStatus({ error: e.message || 'Failed to reach backend' });
@@ -143,10 +145,18 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               <div className="space-y-3">
                 {/* Backend Status */}
                 <div className="flex items-center justify-between p-3 rounded-xl nm-inset">
-                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Cloud Backend</span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-green-500">
-                    <CheckCircle2 size={12} /> Connected
-                  </span>
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Local Backend</span>
+                  {checkingHealth ? (
+                    <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+                  ) : healthStatus && !healthStatus.error ? (
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--success)' }}>
+                      <CheckCircle2 size={12} /> Running
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--danger)' }}>
+                      <AlertCircle size={12} /> Offline
+                    </span>
+                  )}
                 </div>
 
                 {/* Ollama Status */}
@@ -261,7 +271,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         )}
 
         {/* ── Profile Tab ── */}
-        {activeTab !== 'analytics' && (
+        {activeTab === 'profile' && (
         <div className="px-6 py-5 space-y-5">
 
           {/* Who Am I section */}
