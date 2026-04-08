@@ -1,6 +1,6 @@
 import asyncio
 import math
-from datetime import datetime, timezone
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -15,18 +15,23 @@ from services.broadcaster import manager
 router = APIRouter(prefix="/api/memories", tags=["memories"])
 
 
+def _utcnow() -> datetime:
+    return datetime.utcnow()
+
+
 @router.get("", response_model=list[MemoryResponse])
 async def list_memories(user_id: str = "default", db: AsyncSession = Depends(get_db)):
     stmt = select(Memory).where(Memory.user_id == user_id).order_by(Memory.created_at.desc())
     result = await db.execute(stmt)
     memories = result.scalars().all()
 
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     for mem in memories:
         if mem.is_pinned:
             mem.decay_score = 1.0
         else:
-            days = (now - mem.last_accessed_at).total_seconds() / 86400.0
+            last = mem.last_accessed_at or now
+            days = (now - last).total_seconds() / 86400.0
             mem.decay_score = math.exp(-mem.lambda_rate * days)
     await db.commit()
 
@@ -64,11 +69,12 @@ async def update_memory(memory_id: str, update: MemoryUpdate, db: AsyncSession =
 
     if update.content is not None and update.content != memory.content:
         memory.content = update.content
-        memory.updated_at = datetime.now(timezone.utc)
+        memory.updated_at = _utcnow()
         new_embedding = await asyncio.to_thread(embeddings.embed_text, update.content)
         vector_store.update_memory(
             memory.id, new_embedding, update.content,
-            {"user_id": memory.user_id, "importance": memory.importance, "created_at": memory.created_at.isoformat()},
+            {"user_id": memory.user_id, "importance": memory.importance,
+             "created_at": memory.created_at.isoformat() if memory.created_at else ""},
         )
 
     await db.commit()

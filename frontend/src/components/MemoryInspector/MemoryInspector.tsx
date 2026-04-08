@@ -1,9 +1,103 @@
-import { useState } from 'react';
-import { Brain } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Brain, Check, ChevronDown, Clock, Flame, TrendingDown } from 'lucide-react';
 import { MemoryCard } from './MemoryCard';
 import { useMemories } from '../../hooks/useMemories';
 
 type SortMode = 'recent' | 'importance' | 'decay';
+
+const SORT_OPTIONS: { value: SortMode; label: string; icon: React.ReactNode }[] = [
+  { value: 'recent',     label: 'Recent',       icon: <Clock size={12} /> },
+  { value: 'importance', label: 'Importance',   icon: <Flame size={12} /> },
+  { value: 'decay',      label: 'Lowest decay', icon: <TrendingDown size={12} /> },
+];
+
+function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: SortMode;
+  onChange: (v: SortMode) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = SORT_OPTIONS.find((o) => o.value === value)!;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative flex-1">
+      {/* Trigger */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl nm-inset text-[11px] font-medium transition-all"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        <span className="flex items-center gap-1.5">
+          <span style={{ color: 'var(--accent)' }}>{current.icon}</span>
+          {current.label}
+        </span>
+        <ChevronDown
+          size={12}
+          style={{
+            color: 'var(--text-muted)',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+          }}
+        />
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div
+          className="absolute top-full mt-2 left-0 right-0 z-50 rounded-xl overflow-hidden"
+          style={{
+            background: 'var(--nm-card)',
+            boxShadow:
+              '-8px -8px 18px var(--nm-shadow-light), 8px 8px 18px var(--nm-shadow-dark)',
+          }}
+        >
+          {SORT_OPTIONS.map((opt) => {
+            const active = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => { onChange(opt.value); setOpen(false); }}
+                className="w-full flex items-center justify-between px-3 py-2.5 text-left transition-all"
+                style={{
+                  background: active
+                    ? 'color-mix(in srgb, var(--accent) 12%, transparent)'
+                    : 'transparent',
+                  color: active ? 'var(--accent)' : 'var(--text-secondary)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background =
+                    'color-mix(in srgb, var(--accent) 6%, transparent)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                }}
+              >
+                <span className="flex items-center gap-2 text-[12px] font-medium">
+                  <span style={{ color: active ? 'var(--accent)' : 'var(--text-muted)' }}>
+                    {opt.icon}
+                  </span>
+                  {opt.label}
+                </span>
+                {active && <Check size={12} style={{ color: 'var(--accent)' }} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function MemoryInspector() {
   const { memories, pinMemory, flagMemory, deleteMemory } = useMemories();
@@ -15,83 +109,94 @@ export function MemoryInspector() {
     return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
   });
 
-  const pinned = sorted.filter((m) => m.is_pinned);
-  const conflicts = sorted.filter((m) => m.contradiction_with?.length && !m.is_pinned);
-  const normal = sorted.filter((m) => !m.is_pinned && !m.contradiction_with?.length);
+  const pinned    = sorted.filter((m) => m.is_pinned);
+  const conflicts = sorted.filter((m) => (m.contradiction_with?.length ?? 0) > 0 && !m.is_pinned);
+  const normal    = sorted.filter((m) => !m.is_pinned && !(m.contradiction_with?.length ?? 0));
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-2">
-          <Brain size={18} style={{ color: 'var(--accent)' }} />
-          <span className="font-semibold text-sm">Memory Inspector</span>
+    <div className="flex flex-col h-full" style={{ background: 'var(--bg-primary)' }}>
+
+      {/* ── Header ── */}
+      <div className="px-4 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
+
+        {/* Title + count */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Brain size={17} style={{ color: 'var(--accent)' }} />
+            <span className="font-bold text-sm tracking-tight" style={{ color: 'var(--text-primary)' }}>
+              Memory Inspector
+            </span>
+          </div>
           <span
-            className="text-[11px] px-1.5 py-0.5 rounded-full"
-            style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}
+            className="nm-btn px-2.5 py-1 rounded-xl text-xs font-bold tabular-nums min-w-[28px] text-center"
+            style={{ color: memories.length > 0 ? 'var(--accent)' : 'var(--text-muted)' }}
           >
             {memories.length}
           </span>
         </div>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as SortMode)}
-          className="text-xs px-2 py-1 rounded-lg outline-none cursor-pointer"
-          style={{
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border)',
-          }}
-        >
-          <option value="recent">Recent</option>
-          <option value="importance">Importance</option>
-          <option value="decay">Lowest decay</option>
-        </select>
+
+        {/* Sort + conflict pill */}
+        <div className="flex items-center gap-2">
+          <SortDropdown value={sort} onChange={setSort} />
+          {conflicts.length > 0 && (
+            <span
+              className="text-[10px] px-2 py-1.5 rounded-xl font-semibold flex-shrink-0"
+              style={{
+                background: 'color-mix(in srgb, var(--danger) 15%, transparent)',
+                color: 'var(--danger)',
+              }}
+            >
+              ⚠ {conflicts.length}
+            </span>
+          )}
+        </div>
       </div>
 
+      {/* ── Memory list ── */}
       <div className="flex-1 overflow-y-auto p-3">
         {memories.length === 0 && (
-          <div className="text-center py-12 opacity-40">
-            <Brain size={32} className="mx-auto mb-2" />
-            <p className="text-sm">No memories yet</p>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Start chatting to build memory
-            </p>
+          <div className="flex flex-col items-center justify-center h-full gap-3 select-none" style={{ opacity: 0.35 }}>
+            <div className="nm-card p-5 rounded-2xl">
+              <Brain size={36} style={{ color: 'var(--text-muted)' }} />
+            </div>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>No memories yet</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Start chatting to build memory</p>
           </div>
         )}
 
         {pinned.length > 0 && (
-          <>
-            <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--success)' }}>
-              Pinned
+          <section className="mb-1">
+            <div className="text-[9px] font-bold uppercase tracking-widest mb-2 px-1" style={{ color: 'var(--success)' }}>
+              📌 Pinned
             </div>
             {pinned.map((m) => (
               <MemoryCard key={m.id} memory={m} onPin={pinMemory} onFlag={flagMemory} onDelete={deleteMemory} />
             ))}
-          </>
+          </section>
         )}
 
         {conflicts.length > 0 && (
-          <>
-            <div className="text-[10px] font-semibold uppercase tracking-wider mb-2 mt-3" style={{ color: 'var(--danger)' }}>
-              Conflicts
+          <section className="mb-1">
+            <div className="text-[9px] font-bold uppercase tracking-widest mb-2 px-1" style={{ color: 'var(--danger)' }}>
+              ⚠ Conflicts
             </div>
             {conflicts.map((m) => (
               <MemoryCard key={m.id} memory={m} onPin={pinMemory} onFlag={flagMemory} onDelete={deleteMemory} />
             ))}
-          </>
+          </section>
         )}
 
         {normal.length > 0 && (
-          <>
+          <section>
             {(pinned.length > 0 || conflicts.length > 0) && (
-              <div className="text-[10px] font-semibold uppercase tracking-wider mb-2 mt-3" style={{ color: 'var(--text-muted)' }}>
+              <div className="text-[9px] font-bold uppercase tracking-widest mb-2 mt-3 px-1" style={{ color: 'var(--text-muted)' }}>
                 All Memories
               </div>
             )}
             {normal.map((m) => (
               <MemoryCard key={m.id} memory={m} onPin={pinMemory} onFlag={flagMemory} onDelete={deleteMemory} />
             ))}
-          </>
+          </section>
         )}
       </div>
     </div>

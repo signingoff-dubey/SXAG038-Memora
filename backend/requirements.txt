@@ -3,7 +3,7 @@ uvicorn[standard]==0.34.2
 sqlalchemy==2.0.40
 aiosqlite==0.21.0
 pydantic-settings==2.9.1
-chromadb>=1.5.0
+chromadb==1.5.7
 sentence-transformers==4.1.0
 transformers==4.51.3
 torch>=2.9.0

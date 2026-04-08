@@ -10,16 +10,41 @@ from services.broadcaster import manager
 from services.contradiction import check_contradictions
 
 
-async def write_pipeline(user_message: str, assistant_response: str, session_id: str, user_id: str, db: AsyncSession):
-    facts = await llm.classify_worth_remembering(user_message, assistant_response)
+async def write_pipeline(
+    user_message: str,
+    assistant_response: str,
+    session_id: str,
+    user_id: str,
+    db: AsyncSession,
+    model: str | None = None,
+    custom_base_url: str | None = None,
+    custom_api_key: str | None = None,
+):
+    facts = await llm.classify_worth_remembering(
+        user_message,
+        assistant_response,
+        model=model,
+        custom_base_url=custom_base_url,
+        custom_api_key=custom_api_key,
+    )
     if not facts:
         return
 
     for fact in facts:
-        await _store_single_memory(fact, session_id, user_id, db)
+        await _store_single_memory(
+            fact, session_id, user_id, db, model, custom_base_url, custom_api_key
+        )
 
 
-async def _store_single_memory(content: str, session_id: str, user_id: str, db: AsyncSession):
+async def _store_single_memory(
+    content: str,
+    session_id: str,
+    user_id: str,
+    db: AsyncSession,
+    model: str | None = None,
+    custom_base_url: str | None = None,
+    custom_api_key: str | None = None,
+):
     embedding = await asyncio.to_thread(embeddings.embed_text, content)
 
     results = vector_store.query_similar(
@@ -32,7 +57,12 @@ async def _store_single_memory(content: str, session_id: str, user_id: str, db: 
             if similarity >= settings.dedup_threshold:
                 return
 
-    importance = await llm.score_importance(content)
+    importance = await llm.score_importance(
+        content,
+        model=model,
+        custom_base_url=custom_base_url,
+        custom_api_key=custom_api_key,
+    )
 
     memory = Memory(
         user_id=user_id,
