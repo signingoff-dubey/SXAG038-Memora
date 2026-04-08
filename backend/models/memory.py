@@ -19,6 +19,7 @@ class Memory(Base):
     lambda_rate: Mapped[float] = mapped_column(Float, default=0.05)
     is_pinned: Mapped[bool] = mapped_column(Boolean, default=False)
     is_flagged_unimportant: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_session_only: Mapped[bool] = mapped_column(Boolean, default=False)
     contradiction_with: Mapped[list] = mapped_column(JSON, default=list)
     access_count: Mapped[int] = mapped_column(Integer, default=0)
     # Store as naive UTC — consistent with SQLite's behaviour
@@ -37,6 +38,7 @@ class Memory(Base):
             "lambda_rate": self.lambda_rate,
             "is_pinned": self.is_pinned,
             "is_flagged_unimportant": self.is_flagged_unimportant,
+            "is_session_only": self.is_session_only,
             "contradiction_with": self.contradiction_with or [],
             "access_count": self.access_count,
             "created_at": self.created_at.isoformat() if self.created_at else None,

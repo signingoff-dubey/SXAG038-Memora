@@ -160,9 +160,9 @@ function App() {
           <ChatWindow />
         </main>
 
-        {/* Right: Memory Inspector */}
+        {/* Right: Memory Inspector — overflow-hidden keeps it inside the flex row */}
         <aside
-          className="w-72 flex-shrink-0 flex flex-col"
+          className="w-72 flex-shrink-0 flex flex-col overflow-hidden"
           style={{
             background: 'var(--bg-primary)',
             borderLeft: '1px solid var(--border)',

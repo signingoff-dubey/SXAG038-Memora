@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, User, Save, CheckCircle2, AlertCircle, Loader2, FileText, Trash2 } from 'lucide-react';
+import { X, User, Save, CheckCircle2, AlertCircle, Loader2, FileText, Trash2, BarChart2 } from 'lucide-react';
 import { contextApi } from '../../api/client';
 import { useMemoryStore } from '../../store/memoryStore';
 
@@ -7,9 +7,25 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
+type Tab = 'profile' | 'analytics';
+
 export function SettingsModal({ onClose }: SettingsModalProps) {
-  const { userProfile, setUserProfile, clearAllHistory } = useMemoryStore();
+  const { userProfile, setUserProfile, clearAllHistory, memories } = useMemoryStore();
   const [confirmClear, setConfirmClear] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('profile');
+
+  // ── Analytics derived values ──────────────────────────────────────────────
+  const totalMemories   = memories.length;
+  const pinned          = memories.filter((m) => m.is_pinned).length;
+  const sessionOnly     = memories.filter((m) => m.is_session_only).length;
+  const conflicts       = memories.filter((m) => (m.contradiction_with?.length ?? 0) > 0).length;
+  const avgImportance   = totalMemories
+    ? (memories.reduce((s, m) => s + m.importance, 0) / totalMemories).toFixed(1)
+    : '—';
+  const avgDecay        = totalMemories
+    ? (memories.reduce((s, m) => s + m.decay_score, 0) / totalMemories * 100).toFixed(0)
+    : '—';
+  const topMemories     = [...memories].sort((a, b) => b.importance - a.importance).slice(0, 3);
 
   const [draft, setDraft]       = useState(userProfile);
   const [saving, setSaving]     = useState(false);
@@ -62,26 +78,101 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           style={{ borderBottom: '1px solid var(--border)' }}
         >
           <div className="flex items-center gap-2.5">
-            <div
-              className="p-1.5 rounded-lg nm-btn"
-              style={{ color: 'var(--accent)' }}
-            >
+            <div className="p-1.5 rounded-lg nm-btn" style={{ color: 'var(--accent)' }}>
               <User size={16} />
             </div>
             <span className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
               Settings
             </span>
           </div>
-          <button
-            onClick={onClose}
-            className="nm-btn p-1.5 rounded-lg transition-all"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Tab switcher */}
+            <div
+              className="flex rounded-xl overflow-hidden nm-inset"
+              style={{ padding: 3 }}
+            >
+              {(['profile', 'analytics'] as Tab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all"
+                  style={{
+                    background: activeTab === tab ? 'var(--accent)' : 'transparent',
+                    color: activeTab === tab ? '#fff' : 'var(--text-muted)',
+                  }}
+                >
+                  {tab === 'profile' ? <User size={11} /> : <BarChart2 size={11} />}
+                  {tab === 'profile' ? 'Profile' : 'Analytics'}
+                </button>
+              ))}
+            </div>
+            <button onClick={onClose} className="nm-btn p-1.5 rounded-lg transition-all" style={{ color: 'var(--text-muted)' }}>
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
-        {/* ── Body ── */}
+        {/* ── Analytics Tab ── */}
+        {activeTab === 'analytics' && (
+          <div className="px-6 py-5 space-y-4">
+            {/* Stats grid */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Total',       value: totalMemories, color: 'var(--accent)' },
+                { label: 'Pinned',      value: pinned,        color: 'var(--success)' },
+                { label: 'Conflicts',   value: conflicts,     color: 'var(--danger)' },
+                { label: 'Session-only',value: sessionOnly,   color: 'var(--warning)' },
+                { label: 'Avg importance', value: avgImportance, color: 'var(--text-primary)' },
+                { label: 'Avg health',  value: `${avgDecay}%`,color: 'var(--text-primary)' },
+              ].map(({ label, value, color }) => (
+                <div
+                  key={label}
+                  className="rounded-xl p-3 nm-card text-center"
+                >
+                  <div className="text-lg font-bold tabular-nums" style={{ color }}>{value}</div>
+                  <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Top memories by importance */}
+            {topMemories.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  🧠 Top memories by importance
+                </p>
+                <div className="space-y-2">
+                  {topMemories.map((m) => (
+                    <div
+                      key={m.id}
+                      className="flex items-start gap-2 px-3 py-2 rounded-xl"
+                      style={{ background: 'var(--bg-tertiary)' }}
+                    >
+                      <span
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5"
+                        style={{ background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }}
+                      >
+                        {m.importance.toFixed(0)}★
+                      </span>
+                      <p className="text-xs leading-snug" style={{ color: 'var(--text-primary)' }}>
+                        {m.content.length > 80 ? m.content.slice(0, 80) + '…' : m.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {totalMemories === 0 && (
+              <div className="text-center py-8 opacity-40">
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No memories yet — start chatting!</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Profile Tab ── */}
+        {activeTab !== 'analytics' && (
         <div className="px-6 py-5 space-y-5">
 
           {/* Who Am I section */}
@@ -205,8 +296,10 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             </div>
           </div>
         </div>
+        )}
 
-        {/* ── Footer ── */}
+        {/* ── Footer (profile tab only) ── */}
+        {activeTab === 'profile' && (
         <div
           className="flex items-center justify-end gap-3 px-6 py-4"
           style={{ borderTop: '1px solid var(--border)' }}
@@ -236,6 +329,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             {saving ? 'Saving…' : 'Save profile'}
           </button>
         </div>
+        )}
       </div>
     </div>
   );

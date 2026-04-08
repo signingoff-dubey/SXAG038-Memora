@@ -24,5 +24,15 @@ export function useMemories() {
     removeMemory(id);
   };
 
-  return { memories, pinMemory, flagMemory, deleteMemory };
+  const updateImportance = async (id: string, importance: number) => {
+    const { data } = await memoriesApi.update(id, { importance });
+    updateMemory(data);
+  };
+
+  const toggleSessionOnly = async (id: string, isSessionOnly: boolean) => {
+    const { data } = await memoriesApi.update(id, { is_session_only: isSessionOnly });
+    updateMemory(data);
+  };
+
+  return { memories, pinMemory, flagMemory, deleteMemory, updateImportance, toggleSessionOnly };
 }

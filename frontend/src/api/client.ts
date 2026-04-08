@@ -32,6 +32,7 @@ export interface MemoryData {
   lambda_rate: number;
   is_pinned: boolean;
   is_flagged_unimportant: boolean;
+  is_session_only: boolean;
   contradiction_with: string[];
   access_count: number;
   created_at: string | null;
@@ -42,7 +43,9 @@ export interface MemoryData {
 export interface MemoryUpdate {
   is_pinned?: boolean;
   is_flagged_unimportant?: boolean;
+  is_session_only?: boolean;
   content?: string;
+  importance?: number;
 }
 
 export interface OllamaModel {
