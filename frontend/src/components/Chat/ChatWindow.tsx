@@ -1,15 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { useChat } from '../../hooks/useChat';
 import { useMemoryStore } from '../../store/memoryStore';
-import { Brain } from 'lucide-react';
+import { Brain, AlertTriangle, Cpu, Key } from 'lucide-react';
 
 export function ChatWindow() {
   const { sendMessage, loading } = useChat();
   const messages = useMemoryStore((s) => s.messages);
   const activeSessionId = useMemoryStore((s) => s.activeSessionId);
+  const installedModels = useMemoryStore((s) => s.installedModels);
+  const customConfig = useMemoryStore((s) => s.customConfig);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [triggerModelSelector, setTriggerModelSelector] = useState(false);
+
+  const noLLM = installedModels.length === 0 && !customConfig;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -59,9 +64,57 @@ export function ChatWindow() {
         <div ref={bottomRef} />
       </div>
 
+      {/* ── No LLM banner ── */}
+      {noLLM && (
+        <div
+          className="mx-4 mb-3 rounded-2xl px-4 py-3 flex items-center justify-between gap-3"
+          style={{
+            background: 'color-mix(in srgb, var(--warning) 10%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--warning) 35%, transparent)',
+          }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <AlertTriangle size={16} className="flex-shrink-0" style={{ color: 'var(--warning)' }} />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold" style={{ color: 'var(--warning)' }}>
+                No LLM detected
+              </p>
+              <p className="text-[11px] leading-snug mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                Install Ollama and pull a model, or connect a cloud API key.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              onClick={() => setTriggerModelSelector(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: 'color-mix(in srgb, var(--warning) 18%, transparent)',
+                color: 'var(--warning)',
+                border: '1px solid color-mix(in srgb, var(--warning) 40%, transparent)',
+              }}
+            >
+              <Cpu size={11} /> Install model
+            </button>
+            <button
+              onClick={() => setTriggerModelSelector(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: 'var(--accent)',
+                color: '#fff',
+              }}
+            >
+              <Key size={11} /> Add API key
+            </button>
+          </div>
+        </div>
+      )}
+
       <ChatInput
         onSend={sendMessage}
         disabled={loading || !activeSessionId}
+        openModelSelector={triggerModelSelector}
+        onModelSelectorOpened={() => setTriggerModelSelector(false)}
       />
     </div>
   );

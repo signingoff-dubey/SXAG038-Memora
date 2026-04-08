@@ -6,7 +6,13 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 
 ## Release Notes
 
-### v4.5
+### v4.5 (latest)
+#### 🔌 No-LLM Detection + Netlify Stability
+
+- **No LLM banner** — when no Ollama model is installed and no custom API key is configured, a yellow warning banner appears above the chat input: "No LLM detected — Install Ollama and pull a model, or connect a cloud API key." Two action buttons (**Install model** / **Add API key**) open the model selector popup directly so the user can resolve the issue in one click.
+- **Netlify blank-screen fix** — Netlify's `/* → index.html` catch-all was returning HTML for `/api/*` requests. Axios saw HTTP 200, skipped the error path, and stored an HTML string as the `memories` array. Components then called `.filter()` on a string, crashing React and blanking the page. Fixed with: (1) a `/api/* → 404` redirect rule added before the catch-all in `netlify.toml`, and (2) an `Array.isArray` guard in `fetchMemories` and `modelsApi.list()` so non-array responses are silently ignored instead of crashing the store.
+
+### v4.5 (earlier)
 #### 🧠 Session-Isolated Memory + Bug Fixes
 
 - **Session-isolated retrieval** — long-term (cross-session) memories and session-only memories are now properly scoped. The retrieval pipeline filters by `session_id` so session-only facts from session A are never injected into session B.
@@ -70,6 +76,7 @@ You can use the hosted interface while keeping your data and AI processing on yo
 
 ### Models
 - **Auto model detection** — fetches installed Ollama models on page load and auto-selects one if the stored model is not available
+- **No-LLM banner** — if no Ollama model is installed and no API key is configured, a warning banner appears above the chat input with one-click **Install model** and **Add API key** buttons that open the model selector immediately
 - **Vision badge** — 👁 shown on models that support image input
 - **Multi-model support** — choose any locally installed Ollama model, or connect any OpenAI-compatible API with a custom key
 
@@ -77,6 +84,7 @@ You can use the hosted interface while keeping your data and AI processing on yo
 - **One-click startup** — `run.bat` initialises Ollama, Backend, and Frontend, then opens browser tabs.
 - **Cross-platform network stability** — standardised on `127.0.0.1` to avoid IPv6/IPv4 `ECONNREFUSED` issues.
 - **Netlify deployment** — frontend auto-deploys to Netlify on push; backend runs locally via `server.bat`; Local Backend toggle in Settings routes all traffic to `localhost:8000`.
+- **Netlify API isolation** — `/api/*` paths return 404 instead of the SPA fallback, preventing HTML responses from corrupting the frontend store.
 
 ---
 

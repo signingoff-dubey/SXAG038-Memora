@@ -297,7 +297,10 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     set({ isLoadingMemories: true });
     try {
       const resp = await import('../api/client').then(m => m.memoriesApi.list(userId, sessionId));
-      set({ memories: resp.data });
+      // Guard: backend might be unavailable and Netlify returns HTML — only accept arrays
+      if (Array.isArray(resp.data)) {
+        set({ memories: resp.data });
+      }
     } catch (error) {
       console.error('Failed to fetch memories:', error);
     } finally {
