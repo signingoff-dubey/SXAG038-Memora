@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --chat-user: #6366f1;
+  --chat-assistant: #1e293b;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --border: #334155;
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --success: #4ade80;
+  --chat-user: #818cf8;
+  --chat-assistant: #334155;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-tertiary) transparent;
+}

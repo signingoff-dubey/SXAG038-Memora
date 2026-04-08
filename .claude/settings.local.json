@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"/c/Users/kabir/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.6/skills/brainstorming/scripts/start-server.sh\" --project-dir \"/c/Users/kabir/OneDrive/Desktop/PS2- ContextAI\")",
+      "Bash(xargs cat:*)"
+    ]
+  }
+}
