@@ -7,8 +7,14 @@
   NODE_VERSION = "20"
 
 [[redirects]]
-  # This ensures that SPAs (Single Page Applications) work correctly
-  # by redirecting all traffic to index.html when a direct route is refreshed.
+  # Return 404 for /api/* so the browser gets a real error (not HTML),
+  # which lets Axios throw and the frontend catch blocks handle it cleanly.
+  from = "/api/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  # SPA fallback — all non-file, non-api routes serve index.html
   from = "/*"
   to = "/index.html"
   status = 200

@@ -59,7 +59,7 @@ function App() {
   useEffect(() => {
     // 2. Fetch installed Ollama models, auto-select if current isn't available
     modelsApi.list().then(({ data }) => {
-      const names = data.models.map((m) => m.name);
+      const names = Array.isArray(data?.models) ? data.models.map((m) => m.name) : [];
       setInstalledModels(names);
 
       // If not using a custom API and the stored model isn't installed, pick the first one

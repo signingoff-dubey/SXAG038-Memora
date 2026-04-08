@@ -178,7 +178,13 @@ function DownloadPopup({ modelName, onClose }: DownloadPopupProps) {
   );
 }
 
-export function ModelSelector() {
+interface ModelSelectorProps {
+  /** When true, the dropdown opens immediately (used by the no-LLM banner). Reset to false after handling. */
+  forceOpen?: boolean;
+  onForceOpenHandled?: () => void;
+}
+
+export function ModelSelector({ forceOpen, onForceOpenHandled }: ModelSelectorProps = {}) {
   const { selectedModel, customConfig, installedModels, setSelectedModel, setCustomConfig, setInstalledModels } = useMemoryStore();
   const [open, setOpen] = useState(false);
   const [availableModels, setAvailableModels] = useState<OllamaModel[]>([]);
@@ -186,6 +192,16 @@ export function ModelSelector() {
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [downloadTarget, setDownloadTarget] = useState<string | null>(null);
   const dropRef = useRef<HTMLDivElement>(null);
+
+  // Allow parent to force-open the dropdown (e.g. from the no-LLM banner)
+  useEffect(() => {
+    if (forceOpen) {
+      setOpen(true);
+      fetchModels();
+      onForceOpenHandled?.();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceOpen]);
 
   // Close on outside click
   useEffect(() => {

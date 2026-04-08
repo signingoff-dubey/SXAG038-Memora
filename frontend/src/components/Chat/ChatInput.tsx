@@ -13,9 +13,12 @@ interface AttachedImage {
 interface ChatInputProps {
   onSend: (text: string, dataUrls?: string[], b64Images?: string[]) => void;
   disabled: boolean;
+  /** When true, the model selector dropdown opens automatically */
+  openModelSelector?: boolean;
+  onModelSelectorOpened?: () => void;
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, openModelSelector, onModelSelectorOpened }: ChatInputProps) {
   const [input, setInput] = useState('');
   const [images, setImages] = useState<AttachedImage[]>([]);
   const [visionWarning, setVisionWarning] = useState(false);
@@ -161,7 +164,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             onChange={handleFiles}
           />
 
-          <ModelSelector />
+          <ModelSelector forceOpen={openModelSelector} onForceOpenHandled={onModelSelectorOpened} />
 
           <button
             type="submit"
