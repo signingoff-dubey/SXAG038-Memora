@@ -3,7 +3,7 @@ import math
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -20,12 +20,29 @@ def _utcnow() -> datetime:
 
 
 @router.get("", response_model=list[MemoryResponse])
-async def list_memories(user_id: str = "default", db: AsyncSession = Depends(get_db)):
-    stmt = (
-        select(Memory)
-        .where(Memory.user_id == user_id)
-        .order_by(Memory.created_at.desc())
-    )
+async def list_memories(
+    user_id: str = "default",
+    session_id: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    List all memories for a user.
+    If session_id is provided, include:
+    1. Global memories (is_session_only = False)
+    2. Session-only memories matching the provided session_id.
+    """
+    stmt = select(Memory).where(Memory.user_id == user_id)
+
+    if session_id:
+        # Filter: (global) OR (session_match)
+        stmt = stmt.where(
+            or_(Memory.is_session_only == False, Memory.session_id == session_id)
+        )
+    else:
+        # If no session_id is provided, only return global memories
+        stmt = stmt.where(Memory.is_session_only == False)
+
+    stmt = stmt.order_by(Memory.is_session_only.asc(), Memory.created_at.desc())
     result = await db.execute(stmt)
     memories = result.scalars().all()
 
@@ -84,25 +101,29 @@ async def update_memory(
     if update.is_session_only is not None:
         memory.is_session_only = update.is_session_only
 
-    if update.content is not None and update.content != memory.content:
+    content_changed = update.content is not None and update.content != memory.content
+    if content_changed:
         memory.content = update.content
         memory.updated_at = _utcnow()
-        new_embedding = await asyncio.to_thread(embeddings.embed_text, update.content)
-        vector_store.update_memory(
-            memory.id,
-            new_embedding,
-            update.content,
-            {
-                "user_id": memory.user_id,
-                "importance": memory.importance,
-                "created_at": memory.created_at.isoformat()
-                if memory.created_at
-                else "",
-            },
-        )
 
     await db.commit()
     await db.refresh(memory)
+
+    # Always keep ChromaDB in sync — include every field used in retrieval filters
+    current_metadata = {
+        "user_id": memory.user_id,
+        "importance": memory.importance,
+        "created_at": memory.created_at.isoformat() if memory.created_at else "",
+        "is_session_only": str(memory.is_session_only),
+        "session_id": memory.session_id or "",
+    }
+
+    if content_changed:
+        new_embedding = await asyncio.to_thread(embeddings.embed_text, memory.content)
+        vector_store.update_memory(memory.id, new_embedding, memory.content, current_metadata)
+    else:
+        vector_store.update_memory_metadata(memory.id, current_metadata)
+
     await manager.broadcast("memory_updated", memory.to_dict())
     return memory
 

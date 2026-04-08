@@ -24,6 +24,9 @@ function App() {
   const setInstalledModels = useMemoryStore((s) => s.setInstalledModels);
   const userProfile       = useMemoryStore((s) => s.userProfile);
 
+  const fetchMemories     = useMemoryStore((s) => s.fetchMemories);
+  const setMemories       = useMemoryStore((s) => s.setMemories);
+
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Apply theme class
@@ -43,6 +46,15 @@ function App() {
       }
     }
   }, [activeSessionId, sessions, loadSession, createSession]);
+
+  // ── 2. Handle session-specific memory fetching ──────────────────────────────
+  useEffect(() => {
+    if (activeSessionId) {
+      fetchMemories('default', activeSessionId);
+    } else {
+      setMemories([]);
+    }
+  }, [activeSessionId, fetchMemories, setMemories]);
 
   useEffect(() => {
     // 2. Fetch installed Ollama models, auto-select if current isn't available

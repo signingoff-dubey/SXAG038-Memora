@@ -309,8 +309,8 @@ export function MemoryInspector() {
 
         {renderSection('📌 Pinned', 'var(--success)', pinned, handlers, false)}
         {renderSection('⚠ Conflicts', 'var(--danger)', conflicts, handlers, pinned.length > 0)}
-        {renderSection('🧠 Cross-session memories', 'var(--accent)', crossSession, handlers, pinned.length > 0 || conflicts.length > 0)}
-        {renderSection('⏱ Session only', 'var(--warning)', sessionOnly, handlers, crossSession.length > 0 || pinned.length > 0 || conflicts.length > 0)}
+        {renderSection('🧠 Long-term memories', 'var(--accent)', crossSession, handlers, pinned.length > 0 || conflicts.length > 0)}
+        {renderSection('⏱ Session-only context', 'var(--warning)', sessionOnly, handlers, crossSession.length > 0 || pinned.length > 0 || conflicts.length > 0)}
       </div>
     </div>
   );
