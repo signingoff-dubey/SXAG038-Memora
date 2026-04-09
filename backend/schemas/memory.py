@@ -29,3 +29,10 @@ class MemoryUpdate(BaseModel):
     is_session_only: bool | None = None
     content: str | None = None
     importance: float | None = None   # allow user to override AI-assigned score
+    contradiction_with: list[str] | None = None  # clear or update conflict list
+
+
+class MergeRequest(BaseModel):
+    memory_id_a: str
+    memory_id_b: str
+    user_id: str = "default"

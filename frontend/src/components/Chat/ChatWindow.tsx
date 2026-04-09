@@ -3,10 +3,11 @@ import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
 import { useChat } from '../../hooks/useChat';
 import { useMemoryStore } from '../../store/memoryStore';
-import { Brain, AlertTriangle, Cpu, Key } from 'lucide-react';
+import { Brain, AlertTriangle, Cpu, Key, Download } from 'lucide-react';
 
 export function ChatWindow() {
-  const { sendMessage, loading } = useChat();
+  const streamingResponse = useMemoryStore((s) => s.streamingResponse);
+  const { sendMessage, loading, exportChat } = useChat();
   const messages = useMemoryStore((s) => s.messages);
   const activeSessionId = useMemoryStore((s) => s.activeSessionId);
   const installedModels = useMemoryStore((s) => s.installedModels);
@@ -24,7 +25,28 @@ export function ChatWindow() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Header with Export */}
+      {!isEmpty && (
+        <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--nm-shadow-dark)]">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+            <span className="text-xs font-semibold uppercase tracking-wider opacity-60">Active Session</span>
+          </div>
+          <button
+            onClick={() => exportChat()}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95"
+            style={{
+              background: 'var(--nm-card)',
+              color: 'var(--accent)',
+              boxShadow: '2px 2px 5px var(--nm-shadow-dark), -2px -2px 5px var(--nm-shadow-light)',
+            }}
+          >
+            <Download size={14} /> Export Chat
+          </button>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 opacity-40 select-none">
             <div className="nm-card p-5 rounded-3xl">
@@ -44,6 +66,14 @@ export function ChatWindow() {
               images={msg.images}
             />
           ))
+        )}
+
+        {streamingResponse && (
+          <MessageBubble
+            role="assistant"
+            content={streamingResponse}
+            isStreaming
+          />
         )}
 
         {loading && (

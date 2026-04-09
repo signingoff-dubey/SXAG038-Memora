@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Brain, Check, ChevronDown, Clock, Flame, TrendingDown,
-  Search, Download, Upload, X, Clock3,
+  Search, Download, Upload, X, Clock3, History, List
 } from 'lucide-react';
 import { MemoryCard } from './MemoryCard';
+import { MemoryTimeline } from './MemoryTimeline';
+import { ConflictModal } from './ConflictModal';
 import { useMemories } from '../../hooks/useMemories';
 import { useMemoryStore } from '../../store/memoryStore';
 import type { MemoryData } from '../../api/client';
 
 type SortMode = 'recent' | 'importance' | 'decay';
 type FilterMode = 'all' | 'cross-session' | 'session-only';
+type ViewMode = 'list' | 'timeline';
 
 const SORT_OPTIONS: { value: SortMode; label: string; icon: React.ReactNode }[] = [
   { value: 'recent',     label: 'Recent',       icon: <Clock size={12} /> },
@@ -89,6 +92,8 @@ function renderSection(
     onDelete: (id: string) => void;
     onImportanceChange: (id: string, v: number) => void;
     onToggleSessionOnly: (id: string, v: boolean) => void;
+    onContentUpdate: (id: string, v: string) => Promise<void>;
+    onOpenConflict: (m: MemoryData) => void;
   },
   showDivider: boolean,
 ) {
@@ -108,6 +113,8 @@ function renderSection(
           onDelete={handlers.onDelete}
           onImportanceChange={handlers.onImportanceChange}
           onToggleSessionOnly={handlers.onToggleSessionOnly}
+          onContentUpdate={handlers.onContentUpdate}
+          onOpenConflict={handlers.onOpenConflict}
         />
       ))}
     </section>
@@ -120,8 +127,10 @@ export function MemoryInspector() {
 
   const [sort, setSort]         = useState<SortMode>('recent');
   const [filter, setFilter]     = useState<FilterMode>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [search, setSearch]     = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [activeConflict, setActiveConflict] = useState<MemoryData | null>(null);
   const importRef = useRef<HTMLInputElement>(null);
 
   // ── Apply filter + search ─────────────────────────────────────────────────
@@ -148,7 +157,21 @@ export function MemoryInspector() {
   const sessionOnly   = sorted.filter((m) => m.is_session_only && !m.is_pinned && !(m.contradiction_with?.length ?? 0));
   const crossSession  = sorted.filter((m) => !m.is_session_only && !m.is_pinned && !(m.contradiction_with?.length ?? 0));
 
-  const handlers = { onPin: pinMemory, onFlag: flagMemory, onDelete: deleteMemory, onImportanceChange: updateImportance, onToggleSessionOnly: toggleSessionOnly };
+  const handlers = { 
+    onPin: pinMemory, 
+    onFlag: flagMemory, 
+    onDelete: deleteMemory, 
+    onImportanceChange: updateImportance, 
+    onToggleSessionOnly: toggleSessionOnly,
+    onOpenConflict: (m: MemoryData) => setActiveConflict(m),
+    onContentUpdate: async (id: string, content: string) => {
+      const { memoriesApi } = await import('../../api/client');
+      const resp = await memoriesApi.update(id, { content });
+      if (resp.data) {
+        useMemoryStore.getState().updateMemory(resp.data);
+      }
+    }
+  };
 
   // ── Export ────────────────────────────────────────────────────────────────
   const handleExport = () => {
@@ -243,6 +266,22 @@ export function MemoryInspector() {
           </div>
         </div>
 
+        {/* View mode toggle */}
+        <div className="flex p-1 rounded-xl bg-[var(--bg-tertiary)] mb-3" style={{ boxShadow: 'inset 2px 2px 5px var(--nm-shadow-dark)' }}>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'list' ? 'bg-[var(--accent)] text-white shadow-lg' : 'opacity-40 hover:opacity-100'}`}
+          >
+            <List size={12} /> LIST VIEW
+          </button>
+          <button
+            onClick={() => setViewMode('timeline')}
+            className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'timeline' ? 'bg-[var(--accent)] text-white shadow-lg' : 'opacity-40 hover:opacity-100'}`}
+          >
+            <Clock size={12} /> TIMELINE
+          </button>
+        </div>
+
         {/* Search input */}
         {showSearch && (
           <div className="relative mb-2">
@@ -307,11 +346,24 @@ export function MemoryInspector() {
           </div>
         )}
 
-        {renderSection('📌 Pinned', 'var(--success)', pinned, handlers, false)}
-        {renderSection('⚠ Conflicts', 'var(--danger)', conflicts, handlers, pinned.length > 0)}
-        {renderSection('🧠 Long-term memories', 'var(--accent)', crossSession, handlers, pinned.length > 0 || conflicts.length > 0)}
-        {renderSection('⏱ Session-only context', 'var(--warning)', sessionOnly, handlers, crossSession.length > 0 || pinned.length > 0 || conflicts.length > 0)}
+        {viewMode === 'list' ? (
+          <>
+            {renderSection('📌 Pinned', 'var(--success)', pinned, handlers, false)}
+            {renderSection('⚠ Conflicts', 'var(--danger)', conflicts, handlers, pinned.length > 0)}
+            {renderSection('🧠 Long-term memories', 'var(--accent)', crossSession, handlers, pinned.length > 0 || conflicts.length > 0)}
+            {renderSection('⏱ Session-only context', 'var(--warning)', sessionOnly, handlers, crossSession.length > 0 || pinned.length > 0 || conflicts.length > 0)}
+          </>
+        ) : (
+          <MemoryTimeline memories={sorted} />
+        )}
       </div>
+
+      {activeConflict && (
+        <ConflictModal 
+          memory={activeConflict} 
+          onClose={() => setActiveConflict(null)} 
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pin, ArrowDown, Trash2, Clock, RefreshCw, Brain } from 'lucide-react';
+import { Pin, ArrowDown, Trash2, Clock, RefreshCw, Brain, Edit2, Check, X, ShieldAlert } from 'lucide-react';
 import { DecayBar } from './DecayBar';
 import { ConflictBadge } from './ConflictBadge';
 import { useMemoryStore } from '../../store/memoryStore';
@@ -12,6 +12,8 @@ interface MemoryCardProps {
   onDelete: (id: string) => void;
   onImportanceChange: (id: string, importance: number) => void;
   onToggleSessionOnly: (id: string, isSessionOnly: boolean) => void;
+  onContentUpdate: (id: string, content: string) => Promise<void>;
+  onOpenConflict: (memory: MemoryData) => void;
 }
 
 function timeAgo(dateStr: string | null): string {
@@ -39,11 +41,17 @@ export function MemoryCard({
   onDelete,
   onImportanceChange,
   onToggleSessionOnly,
+  onContentUpdate,
+  onOpenConflict,
 }: MemoryCardProps) {
   const allMemories = useMemoryStore((s) => s.memories);
   const [showImportanceSlider, setShowImportanceSlider] = useState(false);
   const [sliderValue, setSliderValue] = useState(Math.round(memory.importance));
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(memory.content);
+  const [isSaving, setIsSaving] = useState(false);
 
   const conflictContents = (memory.contradiction_with || [])
     .map((cid) => allMemories.find((m) => m.id === cid)?.content)
@@ -68,6 +76,22 @@ export function MemoryCard({
       }
     }
     setShowImportanceSlider(false);
+  };
+
+  const handleEditSave = async () => {
+    if (editContent.trim() === memory.content) {
+      setIsEditing(false);
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await onContentUpdate(memory.id, editContent.trim());
+      setIsEditing(false);
+    } catch {
+      setSaveError('Failed to update content');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -129,7 +153,22 @@ export function MemoryCard({
             </button>
           )}
 
-          {hasConflict && <ConflictBadge count={conflictCount} />}
+          {hasConflict && (
+            <button
+              onClick={() => onOpenConflict(memory)}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold animate-pulse hover:animate-none group transition-all"
+              style={{
+                background: 'color-mix(in srgb, var(--danger) 20%, transparent)',
+                color: 'var(--danger)',
+                border: '1px solid color-mix(in srgb, var(--danger) 40%, transparent)',
+                boxShadow: '0 0 10px color-mix(in srgb, var(--danger) 20%, transparent)',
+              }}
+            >
+              <ShieldAlert size={10} />
+              {conflictCount} CONFLICTS
+              <span className="hidden group-hover:inline ml-1 opacity-80">(RESOLVE)</span>
+            </button>
+          )}
         </div>
 
         {/* Action buttons */}
@@ -172,6 +211,36 @@ export function MemoryCard({
           >
             <Trash2 size={12} style={{ color: 'var(--danger)' }} />
           </button>
+          <button
+            onClick={() => {
+              if (isEditing) handleEditSave();
+              else {
+                setEditContent(memory.content);
+                setIsEditing(true);
+              }
+            }}
+            disabled={isSaving}
+            className={`nm-btn p-1.5 rounded-lg transition-all ${isEditing ? 'nm-btn-active scale-110' : ''}`}
+            title="Edit memory"
+          >
+            {isEditing ? (
+              <Check size={12} style={{ color: 'var(--success)' }} />
+            ) : (
+              <Edit2 size={12} style={{ color: 'var(--accent)' }} />
+            )}
+          </button>
+          {isEditing && (
+            <button
+              onClick={() => {
+                setIsEditing(false);
+                setEditContent(memory.content);
+              }}
+              className="nm-btn p-1.5 rounded-lg"
+              title="Cancel editing"
+            >
+              <X size={12} style={{ color: 'var(--danger)' }} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -231,9 +300,20 @@ export function MemoryCard({
       )}
 
       {/* ── Memory content ── */}
-      <p className="text-sm leading-relaxed mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>
-        "{memory.content}"
-      </p>
+      {isEditing ? (
+        <textarea
+          autoFocus
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+          className="w-full bg-[var(--bg-tertiary)] border border-[var(--border)] rounded-xl px-3 py-2 text-sm leading-relaxed mb-2 font-medium focus:outline-none focus:ring-1 focus:ring-[var(--accent)] resize-none"
+          rows={3}
+          style={{ boxShadow: 'inset 2px 2px 5px var(--nm-shadow-dark)' }}
+        />
+      ) : (
+        <p className="text-sm leading-relaxed mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>
+          "{memory.content}"
+        </p>
+      )}
 
       {/* ── Conflict detail ── */}
       {conflictContents.map((txt, i) => (

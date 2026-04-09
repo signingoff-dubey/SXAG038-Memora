@@ -1,4 +1,4 @@
-# Memora v4.5 — Context-Aware AI Agent with Persistent Memory
+# Memora v5.0 — Real-time Context-Aware AI with Persistent Memory
 
 Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
@@ -6,7 +6,19 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 
 ## Release Notes
 
-### v4.5 (latest)
+### v5.0 (latest)
+#### 🚀 Real-time Streaming + Advanced Memory Tools
+
+- **Response Streaming** — assistant replies now stream in real-time with a pulsing cursor, providing immediate visual feedback.
+- **Memory Timeline** — a new "Timeline" view in the Memory Inspector visualizes the evolution of your knowledge graph over time.
+- **Conflict Resolver UI** — side-by-side interface for intentional resolution of contradictory memories (Keep A, Keep B, or AI Smart Merge).
+- **Inline Memory Editing** — allow direct modification of memory content if extracted incorrectly.
+- **Chat Export** — download full conversation histories as Markdown files.
+- **Parameter Sliders** — adjust `importance_threshold` and other AI behaviors directly from the Settings modal.
+- **Demo Mode** — global toggle to activate a presentable state with visual indicators and mock behaviors.
+- **Manual Curation Trigger** — trigger the decay, merge, and delete engine instantly from the UI.
+
+### v4.5
 #### 🔌 No-LLM Detection + Netlify Stability
 
 - **No LLM banner** — when no Ollama model is installed and no custom API key is configured, a yellow warning banner appears above the chat input: "No LLM detected — Install Ollama and pull a model, or connect a cloud API key." Two action buttons (**Install model** / **Add API key**) open the model selector popup directly so the user can resolve the issue in one click.
@@ -52,12 +64,16 @@ You can use the hosted interface while keeping your data and AI processing on yo
 - **Semantic deduplication** — "prefers dark mode" and "likes dark interfaces" are the same belief
 - **Contradiction detection** — NLI model flags conflicting beliefs; LLM adjudicates
 - **Ebbinghaus decay** — memories fade naturally; pinned memories never decay
+- **Manual curation trigger** — instantly run the decay, merge, and cleanup engine from the Settings panel
 - **RAG verification pass** — after every LLM response, a second pass checks whether the reply contradicts any retrieved memories and self-corrects if needed
 
 ### Memory Inspector (right panel)
 - **Grouped sections** — Pinned / Conflicts / Long-term memories / Session-only context, each collapsible
+- **Timeline View** — switch between a structured list and a chronological events view
 - **Memory type badges** — `🧠 long-term` (Brain, persistent) or `⏱ session-only` (Clock, scoped) shown on every card
 - **Importance slider** — click any importance chip to open an inline 1–10 slider; hit Save to persist
+- **Inline Editing** — click the Edit icon on any memory card to modify content directly
+- **Conflict Resolution** — when a red conflict badge appears, click to open the Side-by-Side Resolver
 - **Search** — live filter across all memory content
 - **Export / Import** — download all memories as JSON or import a backup file
 - **User memory controls** — pin (keep forever), flag (safe to auto-delete), or manually delete any memory
@@ -68,10 +84,13 @@ You can use the hosted interface while keeping your data and AI processing on yo
 - **Image / vision support** — attach PNG/JPG/GIF/WebP images; `+` button activates for vision-capable models (llava, llama3.2-vision, moondream, etc.)
 - **Auto-capitalise** — textarea auto-capitalises the first letter
 - **Cursor tracking** — focus always returns to the input box after sending
+- **Chat Export** — click the Export button in the header to download the conversation as Markdown
 
 ### Settings
 - **Who Am I profile** — fill a free-text description; saved to `backend/data/context_<user_id>.json` and injected into every system prompt
-- **Analytics dashboard** — Total / Pinned / Conflicts / Session-only counts, average importance, average memory health, top 3 memories by importance
+- **Analytics dashboard** — Total / Pinned / Conflicts / Session-only counts, average importance, average memory health chart, top 3 memories by importance
+- **AI Parameters** — adjust the `importance_threshold` slider to tune memory extraction sensitivity
+- **Demo Mode** — toggle a presentation-ready state with a global banner and specialized UI behavior
 - **Clear chat history** — wipes all sessions from localStorage with a confirmation step
 
 ### Models
@@ -129,7 +148,8 @@ memora/
 │   │   ├── memories.py           # CRUD /api/memories (session_id filtering + full ChromaDB sync)
 │   │   ├── context.py            # GET/POST /api/context
 │   │   ├── websocket.py          # WS /ws/memories
-│   │   └── health.py             # GET /api/health, /api/models
+│   │   ├── health.py             # GET /api/health, /api/models
+│   │   └── config.py             # GET/PATCH /api/config (importance_threshold)
 │   └── services/
 │       ├── llm.py                # Ollama + OpenAI-compatible + vision + RAG verify
 │       ├── embeddings.py         # sentence-transformers wrapper
@@ -163,9 +183,8 @@ memora/
         ├── store/memoryStore.ts  # Zustand store (sessions, memories, isLoadingMemories)
         ├── utils/visionModels.ts # pattern-match vision capability detection
         ├── hooks/
-        │   ├── useChat.ts        # send message + image forwarding
-        │   ├── useMemories.ts    # pin/flag/delete/updateImportance/toggleSessionOnly
-        │   └── useWebSocket.ts   # live memory updates (local-backend aware)
+        │   ├── useWebSocket.ts   # live memory updates (local-backend aware)
+        │   └── useChat.ts        # streaming message support + export
         └── components/
             ├── Chat/
             │   ├── ChatWindow.tsx
@@ -176,6 +195,8 @@ memora/
             │   ├── MemoryCard.tsx      # long-term/session-only badge + importance slider
             │   ├── DecayBar.tsx
             │   ├── ConflictBadge.tsx
+            │   ├── ConflictModal.tsx   # Side-by-side resolver
+            │   ├── MemoryTimeline.tsx  # Chronological evolution view
             │   └── ImportanceChip.tsx
             └── Layout/
                 ├── ChatHistory.tsx     # left sidebar: session list
@@ -297,18 +318,17 @@ embed → deduplicate → contradiction check → store
 POST /api/chat
 ```
 ```json
-{
-  "message": "string",
-  "session_id": "optional uuid",
-  "user_id": "default",
-  "model": "qwen2.5-coder:7b",
-  "custom_base_url": "https://api.openai.com/v1",
-  "custom_api_key": "sk-...",
-  "images": ["base64string"]
 }
 ```
 
-Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs OpenAI-compatible endpoints and formats accordingly.
+Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs OpenAI-compatible endpoints and formats accordingly. Response is streamed via `StreamingResponse`.
+
+### Chat Export
+
+```
+GET /api/chat/export?session_id=<uuid>
+```
+Returns a `FileResponse` containing a Markdown version of the chat history.
 
 ### Memories
 
@@ -319,6 +339,8 @@ Images are raw base64 strings (no `data:` prefix). The backend detects Ollama vs
 | GET | `/api/memories/{id}` | Get one |
 | PATCH | `/api/memories/{id}` | Update pin / flag / content / importance / session-only |
 | DELETE | `/api/memories/{id}` | Delete from SQLite + ChromaDB |
+| POST | `/api/memories/curate` | Manually trigger decay/merge/delete engine |
+| POST | `/api/memories/merge` | AI-summarize two conflicting memories |
 
 **PATCH body** (all fields optional):
 ```json

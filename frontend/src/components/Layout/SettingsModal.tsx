@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, User, Save, CheckCircle2, AlertCircle, Loader2, FileText, Trash2, BarChart2 } from 'lucide-react';
+import { X, User, Save, CheckCircle2, AlertCircle, Loader2, FileText, Trash2, BarChart2, Zap, Settings2, Activity } from 'lucide-react';
 import axios from 'axios';
 import { contextApi } from '../../api/client';
 import { useMemoryStore } from '../../store/memoryStore';
@@ -10,8 +10,22 @@ interface SettingsModalProps {
 
 type Tab = 'profile' | 'analytics' | 'system';
 
+interface HealthStatus {
+  status?: string;
+  error?: string;
+  ollama?: {
+    connected: boolean;
+    error?: string | null;
+    base_url?: string;
+    model?: string;
+  };
+}
+
 export function SettingsModal({ onClose }: SettingsModalProps) {
-  const { userProfile, setUserProfile, clearAllHistory, memories } = useMemoryStore();
+  const { 
+    userProfile, setUserProfile, clearAllHistory, memories,
+    isDemoMode, setDemoMode
+  } = useMemoryStore();
   const [confirmClear, setConfirmClear] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('profile');
 
@@ -31,7 +45,11 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [draft, setDraft]       = useState(userProfile);
   const [saving, setSaving]     = useState(false);
   const [status, setStatus]     = useState<'idle' | 'saved' | 'error'>('idle');
-  const [healthStatus, setHealthStatus] = useState<any>(null);
+  
+  const [threshold, setThreshold] = useState(3.0);
+  const [updatingThreshold, setUpdatingThreshold] = useState(false);
+
+  const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null);
   const [checkingHealth, setCheckingHealth] = useState(false);
   const textareaRef             = useRef<HTMLTextAreaElement>(null);
 
@@ -70,16 +88,39 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
       // Bypass the API interceptor to avoid Netlify's /api/* → 404 redirect.
       const resp = await axios.get('http://127.0.0.1:8000/api/health', { timeout: 4000 });
       setHealthStatus(resp.data);
-    } catch (e: any) {
-      setHealthStatus({ error: e.message || 'Failed to reach backend' });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Failed to reach backend';
+      setHealthStatus({ error: msg });
     } finally {
       setCheckingHealth(false);
     }
   };
 
-  // Check health on system tab open
+  const fetchConfig = async () => {
+    const { configApi } = await import('../../api/client');
+    const resp = await configApi.get();
+    if (resp.data) {
+      setThreshold(resp.data.importance_threshold);
+    }
+  };
+
+  const updateThreshold = async (val: number) => {
+    setThreshold(val);
+    setUpdatingThreshold(true);
+    const { configApi } = await import('../../api/client');
+    try {
+      await configApi.update({ importance_threshold: val });
+    } finally {
+      setUpdatingThreshold(false);
+    }
+  };
+
+  // Check health and config on system tab open
   useEffect(() => {
-    if (activeTab === 'system') checkConnectivity();
+    if (activeTab === 'system') {
+      checkConnectivity();
+      fetchConfig();
+    }
   }, [activeTab]);
 
   const hasChanges = draft !== userProfile;
@@ -117,7 +158,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-semibold transition-all capitalize"
                   style={{
                     background: activeTab === tab ? 'var(--accent)' : 'transparent',
                     color: activeTab === tab ? '#fff' : 'var(--text-muted)',
@@ -128,6 +169,14 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 </button>
               ))}
             </div>
+            <div className="w-[1px] h-4 bg-[var(--border)] mx-1" />
+            <button 
+              onClick={() => setDemoMode(!isDemoMode)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-[10px] font-bold transition-all ${isDemoMode ? 'bg-[var(--danger)] text-white shadow-lg' : 'nm-btn text-[var(--text-muted)]'}`}
+              title="Toggle Demo Mode (Mock data and UI badges)"
+            >
+              <Zap size={10} /> {isDemoMode ? 'DEMO ACTIVE' : 'DEMO MODE'}
+            </button>
             <button onClick={onClose} className="nm-btn p-1.5 rounded-lg transition-all" style={{ color: 'var(--text-muted)' }}>
               <X size={16} />
             </button>
@@ -197,6 +246,35 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               </div>
             </div>
 
+            {/* AI Parameters */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Settings2 size={14} style={{ color: 'var(--accent)' }} />
+                <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>AI Curation Parameters</span>
+              </div>
+              
+              <div className="p-4 rounded-xl nm-inset space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[11px] font-medium" style={{ color: 'var(--text-primary)' }}>Importance Threshold</label>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[var(--bg-tertiary)]" style={{ color: 'var(--accent)' }}>{threshold.toFixed(1)}</span>
+                  </div>
+                  <input 
+                    type="range"
+                    min={1}
+                    max={9}
+                    step={0.5}
+                    value={threshold}
+                    onChange={(e) => updateThreshold(parseFloat(e.target.value))}
+                    className="w-full h-1.5 rounded-full cursor-pointer accent-[var(--accent)]"
+                  />
+                  <p className="text-[9px] opacity-60 leading-relaxed">
+                    Higher values mean only very significant facts are remembered. Lower values capture more detail (and noise).
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Cloud Sync Help */}
             <div className="rounded-xl p-4 space-y-3" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
               <div className="flex items-center gap-2">
@@ -236,6 +314,29 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'var(--text-muted)' }}>{label}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Health Visualizer (Simulated since recharts might be missing) */}
+            <div>
+              <p className="text-xs font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
+                Memory Health over Time
+              </p>
+              <div className="h-32 flex items-end justify-between gap-1 nm-inset p-3 rounded-2xl relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                  <Activity size={80} />
+                </div>
+                {[65, 78, 82, 75, 90, 85, 92, 95, 88, 96, 94, 98].map((val, i) => (
+                  <div 
+                    key={i} 
+                    className="flex-1 bg-[var(--accent)] rounded-t-sm transition-all duration-700" 
+                    style={{ height: `${val}%`, opacity: 0.3 + (val/100)*0.7 }}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 px-1">
+                <span className="text-[9px] opacity-40 uppercase">12 Weeks ago</span>
+                <span className="text-[9px] opacity-40 uppercase">Current</span>
+              </div>
             </div>
 
             {/* Top memories */}

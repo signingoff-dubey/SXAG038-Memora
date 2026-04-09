@@ -94,7 +94,7 @@ async def chat_completion(
             "messages": _build_openai_messages(messages, images),
             "temperature": temperature,
         }
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=120.0, trust_env=False) as client:
             resp = await client.post(endpoint, json=payload, headers=headers)
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"]
@@ -107,17 +107,84 @@ async def chat_completion(
             "stream": False,
             "options": {"temperature": temperature},
         }
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=120.0, trust_env=False) as client:
             resp = await client.post(endpoint, json=payload)
             resp.raise_for_status()
             return resp.json()["message"]["content"]
+
+
+async def chat_completion_stream(
+    messages: list[dict],
+    temperature: float = 0.7,
+    model: str | None = None,
+    custom_base_url: str | None = None,
+    custom_api_key: str | None = None,
+    images: list[str] | None = None,
+):
+    """Async generator yielding response tokens as strings."""
+    import json as _json
+
+    effective_model = model or settings.ollama_model
+    base_url = custom_base_url or settings.ollama_base_url
+    api_key = custom_api_key
+
+    if api_key and _is_openai_compatible(base_url):
+        endpoint = base_url.rstrip("/") + "/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": effective_model,
+            "messages": _build_openai_messages(messages, images),
+            "temperature": temperature,
+            "stream": True,
+        }
+        async with httpx.AsyncClient(timeout=120.0, trust_env=False) as client:
+            async with client.stream("POST", endpoint, json=payload, headers=headers) as resp:
+                resp.raise_for_status()
+                async for line in resp.aiter_lines():
+                    if not line.startswith("data: "):
+                        continue
+                    chunk = line[6:].strip()
+                    if chunk == "[DONE]":
+                        break
+                    try:
+                        delta = _json.loads(chunk)["choices"][0]["delta"].get("content", "")
+                        if delta:
+                            yield delta
+                    except (KeyError, IndexError, _json.JSONDecodeError):
+                        pass
+    else:
+        endpoint = base_url.rstrip("/") + "/api/chat"
+        payload = {
+            "model": effective_model,
+            "messages": _build_ollama_messages(messages, images),
+            "stream": True,
+            "options": {"temperature": temperature},
+        }
+        async with httpx.AsyncClient(timeout=120.0, trust_env=False) as client:
+            async with client.stream("POST", endpoint, json=payload) as resp:
+                resp.raise_for_status()
+                async for line in resp.aiter_lines():
+                    if not line.strip():
+                        continue
+                    try:
+                        data = _json.loads(line)
+                        token = data.get("message", {}).get("content", "")
+                        if token:
+                            yield token
+                        if data.get("done"):
+                            break
+                    except _json.JSONDecodeError:
+                        pass
 
 
 async def get_ollama_models(base_url: str | None = None) -> list[dict]:
     """Fetch list of locally available Ollama models."""
     url = (base_url or settings.ollama_base_url).rstrip("/") + "/api/tags"
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=10.0, trust_env=False) as client:
             resp = await client.get(url)
             resp.raise_for_status()
             data = resp.json()
@@ -208,6 +275,11 @@ async def classify_and_score_memories(
                 # Enforce cap: session-only memories must not exceed importance 3
                 if is_session:
                     imp = min(imp, 3.0)
+                
+                # Filter by importance threshold if NOT session-only
+                if not is_session and imp < settings.importance_threshold:
+                    continue
+
                 cleaned.append(
                     {
                         "content": content,

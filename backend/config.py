@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = "http://127.0.0.1:11434"
     ollama_model: str = "qwen2.5-coder:7b"
     embedding_model: str = "all-MiniLM-L6-v2"
     nli_model: str = "cross-encoder/nli-deberta-v3-small"
@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     retrieval_candidates: int = 20
     context_memories: int = 5
+    importance_threshold: float = 3.0
     weight_cosine: float = 0.5
     weight_recency: float = 0.3
     weight_importance: float = 0.2

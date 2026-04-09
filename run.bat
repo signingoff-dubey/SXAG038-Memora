@@ -42,15 +42,8 @@ if errorlevel 1 (
 echo    Node.js: OK
 
 echo.
-echo [3/5] Installing backend dependencies...
+echo [3/5] Installing/Updating backend dependencies (v5.0)...
 cd backend
-if not exist "requirements.txt" (
-    echo [ERROR] requirements.txt not found
-    cd ..
-    pause
-    exit /b 1
-)
-
 pip install -r requirements.txt --quiet
 if errorlevel 1 (
     echo [ERROR] Failed to install Python dependencies
@@ -62,23 +55,15 @@ echo    Dependencies: OK
 cd ..
 
 echo.
-echo [4/5] Installing frontend dependencies...
+echo [4/5] Installing/Updating frontend dependencies (v5.0)...
 cd frontend
-if not exist "package.json" (
-    echo [ERROR] package.json not found
+REM Always run npm install --silent to ensure new v5.0 libs (recharts, etc) are present
+call npm install --silent
+if errorlevel 1 (
+    echo [ERROR] Failed to install frontend dependencies
     cd ..
     pause
     exit /b 1
-)
-
-if not exist "node_modules" (
-    call npm install --silent
-    if errorlevel 1 (
-        echo [ERROR] Failed to install frontend dependencies
-        cd ..
-        pause
-        exit /b 1
-    )
 )
 echo    Dependencies: OK
 cd ..

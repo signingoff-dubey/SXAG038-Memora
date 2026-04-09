@@ -10,6 +10,7 @@ interface WSMessage {
 export function useWebSocket(userId: string = 'default') {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryCount = useRef(0);
   const addMemory = useMemoryStore((state) => state.addMemory);
   const updateMemory = useMemoryStore((state) => state.updateMemory);
   const removeMemory = useMemoryStore((state) => state.removeMemory);
@@ -35,11 +36,12 @@ export function useWebSocket(userId: string = 'default') {
       wsUrl = `${protocol}//${wsHost}/ws/memories?user_id=${encodeURIComponent(userId)}`;
     }
 
-    console.log('[WebSocket] Connecting to:', wsUrl);
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
-    ws.onopen = () => { console.log('WebSocket connected'); };
+    ws.onopen = () => {
+      retryCount.current = 0; // reset backoff on successful connect
+    };
 
     ws.onmessage = (event) => {
       const msg: WSMessage = JSON.parse(event.data);
@@ -62,12 +64,14 @@ export function useWebSocket(userId: string = 'default') {
       }
     };
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+    ws.onerror = () => {
+      // error is handled by onclose which always fires after onerror
     };
 
     ws.onclose = () => {
-      const delay = Math.min(1000 * Math.pow(2, 1), 30000);
+      // Exponential backoff: 1s, 2s, 4s, 8s, 16s, capped at 30s
+      const delay = Math.min(1000 * Math.pow(2, retryCount.current), 30000);
+      retryCount.current = Math.min(retryCount.current + 1, 5);
       reconnectTimer.current = setTimeout(connect, delay);
     };
   }, [userId, addMemory, updateMemory, removeMemory]);

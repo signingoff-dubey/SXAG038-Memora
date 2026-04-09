@@ -30,18 +30,20 @@ class ChatRequest(BaseModel):
             parsed = urlparse(self.custom_base_url)
             if parsed.scheme not in ("http", "https"):
                 raise ValueError("Invalid URL scheme")
-            if parsed.netloc in ("localhost", "127.0.0.1", "::1"):
-                pass
+            hostname = parsed.hostname or ""
+            # Block loopback and private IP ranges from custom API base URLs
+            loopback = {"localhost", "127.0.0.1", "::1"}
             private_ip_patterns = [
                 r"^10\.",
                 r"^172\.(1[6-9]|2[0-9]|3[0-1])\.",
                 r"^192\.168\.",
                 r"^127\.",
             ]
-            ip = parsed.hostname or ""
+            if hostname in loopback:
+                raise ValueError("Loopback addresses not allowed as custom API URL")
             for pattern in private_ip_patterns:
-                if re.match(pattern, ip):
-                    raise ValueError("Private IP addresses not allowed")
+                if re.match(pattern, hostname):
+                    raise ValueError("Private IP addresses not allowed as custom API URL")
         return self
 
 

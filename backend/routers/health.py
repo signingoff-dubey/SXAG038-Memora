@@ -15,7 +15,7 @@ async def health():
     ollama_ok = False
     error_detail = None
     try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
+        async with httpx.AsyncClient(timeout=3.0, trust_env=False) as client:
             resp = await client.get(f"{settings.ollama_base_url}/api/tags")
             ollama_ok = resp.status_code == 200
             if not ollama_ok:

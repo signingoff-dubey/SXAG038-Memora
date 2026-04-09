@@ -10,6 +10,8 @@ interface MessageBubbleProps {
   role: 'user' | 'assistant';
   content: string;
   images?: string[];   // data URLs
+  isStreaming?: boolean;
+  memoriesUsed?: string[];
 }
 
 function CodeBlock({ language, children, theme }: { language: string; children: string; theme: 'dark' | 'light' }) {
@@ -56,7 +58,7 @@ function CodeBlock({ language, children, theme }: { language: string; children: 
   );
 }
 
-export function MessageBubble({ role, content, images }: MessageBubbleProps) {
+export function MessageBubble({ role, content, images, isStreaming, memoriesUsed }: MessageBubbleProps) {
   const isUser = role === 'user';
   const theme = useMemoryStore((s) => s.theme);
 
@@ -174,6 +176,23 @@ export function MessageBubble({ role, content, images }: MessageBubbleProps) {
             >
               {content}
             </ReactMarkdown>
+          )}
+
+          {isStreaming && (
+            <span className="inline-block w-1.5 h-4 ml-1 bg-[var(--accent)] animate-pulse align-middle" />
+          )}
+
+          {!isUser && !isStreaming && memoriesUsed && memoriesUsed.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-[var(--nm-shadow-dark)] opacity-40 hover:opacity-100 transition-opacity">
+              <div className="flex flex-wrap gap-1.5 items-center">
+                <span className="text-[10px] uppercase font-bold tracking-tight">Recalled:</span>
+                {memoriesUsed.map(id => (
+                  <span key={id} className="text-[10px] bg-[var(--nm-shadow-dark)] px-1.5 py-0.5 rounded">
+                    memory:{id.slice(0, 4)}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>

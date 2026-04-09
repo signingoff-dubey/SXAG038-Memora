@@ -56,6 +56,7 @@ const THEME_KEY       = 'memora-theme';
 const HISTORY_KEY     = 'memora-history-open';
 const PROFILE_KEY     = 'memora-user-profile';
 const LOCAL_BA_KEY    = 'memora-local-backend';
+const DEMO_MODE_KEY   = 'memora-demo-mode';
 
 function msgsKey(sessionId: string) {
   return MSGS_PREFIX + sessionId;
@@ -81,6 +82,10 @@ interface MemoryStore {
   theme: 'light' | 'dark';
   historyOpen: boolean;
   localBackendActive: boolean;
+  isDemoMode: boolean;
+
+  // Streaming
+  streamingResponse: string;
 
   // Memories (from backend)
   memories: MemoryData[];
@@ -118,12 +123,20 @@ interface MemoryStore {
   // Local backend
   setLocalBackendActive: (active: boolean) => void;
 
+  // Demo Mode
+  setDemoMode: (active: boolean) => void;
+
+  // Chat Actions
+  sendMessageStream: (message: string, images?: string[]) => Promise<void>;
+  exportChat: () => Promise<void>;
+
   // Memories
   setMemories: (memories: MemoryData[]) => void;
   fetchMemories: (userId?: string, sessionId?: string) => Promise<void>;
   addMemory: (memory: MemoryData) => void;
   updateMemory: (memory: MemoryData) => void;
   removeMemory: (id: string) => void;
+  resolveConflict: (memoryIdA: string, memoryIdB: string) => Promise<void>;
 }
 
 // ── Store ─────────────────────────────────────────────────────────────────────
@@ -142,6 +155,9 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   theme: LS.get<'light' | 'dark'>(THEME_KEY, 'dark'),
   historyOpen: LS.get<boolean>(HISTORY_KEY, true),
   localBackendActive: LS.get<boolean>(LOCAL_BA_KEY, false),
+  isDemoMode: LS.get<boolean>(DEMO_MODE_KEY, false),
+
+  streamingResponse: '',
 
   memories: [],
   isLoadingMemories: false,
@@ -203,8 +219,6 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     set({ sessions });
   },
 
-  // ── Messages ─────────────────────────────────────────────────────────────
-
   addMessage: (msg) => {
     const full: ChatMessage = { ...msg, timestamp: Date.now() };
     const messages = [...get().messages, full];
@@ -213,6 +227,52 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
       LS.set(msgsKey(activeSessionId), messages);
     }
     set({ messages });
+  },
+
+  sendMessageStream: async (content, images) => {
+    const { activeSessionId, selectedModel, customConfig, addMessage, updateSessionMeta } = get();
+    if (!activeSessionId) return;
+
+    // Add user message
+    addMessage({ role: 'user', content, images });
+    updateSessionMeta(activeSessionId, content);
+
+    set({ streamingResponse: ' ' }); // Initial space to show bubble
+
+    const { chatApi } = await import('../api/client');
+    
+    await chatApi.stream(
+      {
+        message: content,
+        session_id: activeSessionId,
+        user_id: 'default',
+        model: selectedModel,
+        custom_base_url: customConfig?.baseUrl,
+        custom_api_key: customConfig?.apiKey,
+        images: images,
+      },
+      (token) => {
+        set((state) => ({ streamingResponse: state.streamingResponse + token }));
+      },
+      (done) => {
+        const finalContent = get().streamingResponse.trim() || (done.correction || '');
+        set({ streamingResponse: '' });
+        addMessage({ 
+          role: 'assistant', 
+          content: finalContent,
+          memoriesUsed: done.memories_used 
+        });
+        // Refresh memories after a slight delay to allow writing
+        setTimeout(() => get().fetchMemories('default', activeSessionId), 1000);
+      }
+    );
+  },
+
+  exportChat: async () => {
+    const { activeSessionId } = get();
+    if (!activeSessionId) return;
+    const { chatApi } = await import('../api/client');
+    await chatApi.export(activeSessionId);
   },
 
   setActiveSessionId: (id) => set({ activeSessionId: id }),
@@ -289,6 +349,11 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     set({ localBackendActive: active });
   },
 
+  setDemoMode: (active) => {
+    LS.set(DEMO_MODE_KEY, active);
+    set({ isDemoMode: active });
+  },
+
   // ── Memories ─────────────────────────────────────────────────────────────
 
   setMemories: (memories) => set({ memories }),
@@ -296,13 +361,18 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   fetchMemories: async (userId = 'default', sessionId?: string) => {
     set({ isLoadingMemories: true });
     try {
-      const resp = await import('../api/client').then(m => m.memoriesApi.list(userId, sessionId));
+      const { memoriesApi } = await import('../api/client');
+      const resp = await memoriesApi.list(userId, sessionId);
       // Guard: backend might be unavailable and Netlify returns HTML — only accept arrays
       if (Array.isArray(resp.data)) {
-        set({ memories: resp.data });
+        // Only update if the session hasn't changed while the request was in flight
+        const currentSession = get().activeSessionId;
+        if (currentSession === (sessionId ?? null) || sessionId === undefined) {
+          set({ memories: resp.data });
+        }
       }
-    } catch (error) {
-      console.error('Failed to fetch memories:', error);
+    } catch {
+      // Backend not available — keep existing memories rather than wiping them
     } finally {
       set({ isLoadingMemories: false });
     }
@@ -330,4 +400,13 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     set((state) => ({
       memories: state.memories.filter((m) => m.id !== id),
     })),
+
+  resolveConflict: async (memoryIdA, memoryIdB) => {
+    const { memoriesApi } = await import('../api/client');
+    const resp = await memoriesApi.merge(memoryIdA, memoryIdB);
+    if (resp.data) {
+      get().updateMemory(resp.data);
+      get().removeMemory(memoryIdB);
+    }
+  },
 }));

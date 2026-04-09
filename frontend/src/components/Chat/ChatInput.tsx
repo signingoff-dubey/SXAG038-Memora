@@ -70,6 +70,9 @@ export function ChatInput({ onSend, disabled, openModelSelector, onModelSelector
         const b64 = dataUrl.split(',')[1];
         setImages((prev) => [...prev, { dataUrl, b64, name: file.name }]);
       };
+      reader.onerror = () => {
+        console.error(`Failed to read file: ${file.name}`);
+      };
       reader.readAsDataURL(file);
     });
     // Reset so same file can be picked again

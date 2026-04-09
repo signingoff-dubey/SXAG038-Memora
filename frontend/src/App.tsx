@@ -8,7 +8,7 @@ import { useWebSocket } from './hooks/useWebSocket';
 import { useMemoryStore } from './store/memoryStore';
 import { modelsApi } from './api/client';
 import axios from 'axios';
-import { Brain, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { Brain, ChevronLeft, ChevronRight, Settings, Zap } from 'lucide-react';
 
 function App() {
   const theme             = useMemoryStore((s) => s.theme);
@@ -24,9 +24,11 @@ function App() {
   const setInstalledModels = useMemoryStore((s) => s.setInstalledModels);
   const userProfile       = useMemoryStore((s) => s.userProfile);
 
-  const fetchMemories     = useMemoryStore((s) => s.fetchMemories);
-  const setMemories       = useMemoryStore((s) => s.setMemories);
+  const fetchMemories       = useMemoryStore((s) => s.fetchMemories);
+  const setMemories         = useMemoryStore((s) => s.setMemories);
+  const localBackendActive  = useMemoryStore((s) => s.localBackendActive);
 
+  const isDemoMode = useMemoryStore(s => s.isDemoMode);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Apply theme class
@@ -78,11 +80,9 @@ function App() {
       try {
         // Try a direct ping to the local backend port
         await axios.get('http://127.0.0.1:8000/api/health', { timeout: 1500 });
-        console.log("🌐 Local backend detected! Switching to Local Mode.");
         setLocalBackendActive(true);
-      } catch (e) {
-        // If it fails, we fall back to the cloud/Vite proxy
-        console.log("☁️ Local backend not found. Using Cloud/Default mode.");
+      } catch {
+        // Backend not reachable — fall back to cloud/Vite proxy mode
         setLocalBackendActive(false);
       }
     };
@@ -140,8 +140,16 @@ function App() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-2">
+          {/* Demo mode badge */}
+          {isDemoMode && (
+            <div className="flex items-center gap-2 px-3 py-1.2 rounded-full text-[10px] font-black tracking-tighter bg-red-600 text-white animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+              <Zap size={10} fill="currentColor" />
+              DEMO MODE ACTIVE
+            </div>
+          )}
+
           {/* Local mode badge */}
-          {useMemoryStore.getState().localBackendActive && (
+          {localBackendActive && (
             <div 
               className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-500 border border-green-500/20"
               title="Connected to direct local server (server.bat)"

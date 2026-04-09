@@ -7,17 +7,10 @@ export function useChat() {
   const {
     activeSessionId,
     createSession,
-    addMessage,
-    updateSessionMeta,
-    selectedModel,
-    customConfig,
+    sendMessageStream,
+    exportChat,
   } = useMemoryStore();
 
-  /**
-   * @param text      Message text
-   * @param dataUrls  Optional array of data URLs (data:image/...;base64,...) for display
-   * @param b64Images Optional array of raw base64 strings to send to the backend
-   */
   const sendMessage = async (
     text: string,
     dataUrls?: string[],
@@ -25,59 +18,17 @@ export function useChat() {
   ) => {
     if (!text.trim() || loading) return;
 
-    let sessionId = activeSessionId;
-    if (!sessionId) sessionId = createSession();
-
-    // Store message with data URLs so bubbles can display them
-    addMessage({ role: 'user', content: text, images: dataUrls });
-    updateSessionMeta(sessionId, text);
+    if (!activeSessionId) createSession();
+    
     setLoading(true);
-
     try {
-      const { data } = await chatApi.send({
-        message: text,
-        session_id: sessionId,
-        model: customConfig ? customConfig.modelName : selectedModel,
-        custom_base_url: customConfig?.baseUrl,
-        custom_api_key: customConfig?.apiKey,
-        images: b64Images?.length ? b64Images : undefined,
-      });
-
-      addMessage({
-        role: 'assistant',
-        content: data.response,
-        memoriesUsed: data.memories_used,
-      });
-    } catch (err: unknown) {
-      let msg = 'Could not reach the server. Is the backend running?';
-      if (err && typeof err === 'object') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const e = err as any;
-        if (e.response) {
-          const data = e.response.data;
-          // Never show raw HTML (e.g. Netlify 404 page) — treat as unreachable backend
-          const isHtml = typeof data === 'string' && data.trimStart().startsWith('<');
-          if (isHtml) {
-            msg = 'Backend not reachable. Run server.bat and enable Local Backend in Settings.';
-          } else {
-            const detail = data?.detail ?? data?.message ?? data?.error;
-            if (typeof detail === 'string') {
-              msg = detail;
-            } else if (typeof detail === 'object') {
-              msg = JSON.stringify(detail);
-            } else {
-              msg = `Server error (HTTP ${e.response.status})`;
-            }
-          }
-        } else if (e.message) {
-          msg = e.message;
-        }
-      }
-      addMessage({ role: 'assistant', content: `⚠ ${msg}` });
+      await sendMessageStream(text, dataUrls);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  return { sendMessage, loading };
+  return { sendMessage, loading, exportChat };
 }
