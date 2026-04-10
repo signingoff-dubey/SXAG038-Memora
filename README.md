@@ -1,4 +1,4 @@
-# Memora v5.0 — Real-time Context-Aware AI with Persistent Memory
+# Memora v5.1 — Real-time Context-Aware AI with Persistent Memory
 
 Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
@@ -6,7 +6,15 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 
 ## Release Notes
 
-### v5.0 (latest)
+### v5.1 (latest)
+#### 🔐 Local Storage Encryption + Security Hardening
+
+- **Encrypted localStorage** — all chat sessions and messages are now encrypted with AES-256-GCM before storing in localStorage. Other applications cannot read your data.
+- **Session-based key storage** — encryption keys are stored in sessionStorage (cleared when tab closes), providing additional protection.
+- **Security headers** — backend now sends `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, and `Permissions-Policy` headers.
+- **CORS hardening** — removed permissive wildcard regex, restricted allowed methods to `GET, POST, PATCH, DELETE`.
+
+### v5.0 (earlier)
 #### 🚀 Real-time Streaming + Advanced Memory Tools
 
 - **Response Streaming** — assistant replies now stream in real-time with a pulsing cursor, providing immediate visual feedback.
@@ -104,6 +112,7 @@ You can use the hosted interface while keeping your data and AI processing on yo
 - **Cross-platform network stability** — standardised on `127.0.0.1` to avoid IPv6/IPv4 `ECONNREFUSED` issues.
 - **Netlify deployment** — frontend auto-deploys to Netlify on push; backend runs locally via `server.bat`; Local Backend toggle in Settings routes all traffic to `localhost:8000`.
 - **Netlify API isolation** — `/api/*` paths return 404 instead of the SPA fallback, preventing HTML responses from corrupting the frontend store.
+- **Encrypted localStorage** — all chat sessions and messages encrypted with AES-256-GCM; keys stored in sessionStorage.
 
 ---
 
@@ -120,7 +129,8 @@ You can use the hosted interface while keeping your data and AI processing on yo
 | Context | Per-user `context_<id>.json` files in `backend/data/` |
 | Frontend | Vite + React 19 + TypeScript + Tailwind CSS |
 | Markdown | react-markdown + remark-gfm + react-syntax-highlighter |
-| State | Zustand + localStorage |
+| State | Zustand + encrypted localStorage (AES-256-GCM) |
+| Encryption | Web Crypto API - AES-GCM-256, key in sessionStorage |
 | Realtime | WebSocket (FastAPI native) |
 
 ---
@@ -178,6 +188,8 @@ memora/
     ├── vite.config.ts
     ├── package.json
     └── src/
+        ├── utils/
+        │   └── encryptedStorage.ts   # AES-256-GCM encryption for localStorage
         ├── App.tsx               # layout + session init + session-scoped memory fetch
         ├── api/client.ts         # axios wrapper + all API types (session_id param on list)
         ├── store/memoryStore.ts  # Zustand store (sessions, memories, isLoadingMemories)

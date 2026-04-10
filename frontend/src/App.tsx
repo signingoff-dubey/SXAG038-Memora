@@ -11,6 +11,8 @@ import axios from 'axios';
 import { Brain, ChevronLeft, ChevronRight, Settings, Zap } from 'lucide-react';
 
 function App() {
+  const initialized = useMemoryStore((s) => s.initialized);
+  const initialize = useMemoryStore((s) => s.initialize);
   const theme             = useMemoryStore((s) => s.theme);
   const historyOpen       = useMemoryStore((s) => s.historyOpen);
   const toggleHistory     = useMemoryStore((s) => s.toggleHistory);
@@ -30,6 +32,22 @@ function App() {
 
   const isDemoMode = useMemoryStore(s => s.isDemoMode);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    initialize().then(() => setIsLoading(false));
+  }, [initialize]);
+
+  if (isLoading || !initialized) {
+    return (
+      <div className="h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+        <div className="flex flex-col items-center gap-3">
+          <Brain size={32} style={{ color: 'var(--accent)' }} className="animate-pulse" />
+          <span style={{ color: 'var(--text-muted)' }}>Loading encrypted storage...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Apply theme class
   useEffect(() => {

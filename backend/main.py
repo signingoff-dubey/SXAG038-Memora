@@ -4,6 +4,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -18,10 +19,8 @@ limiter = Limiter(key_func=get_remote_address)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ensure data directory exists
     Path(__file__).parent.joinpath("data").mkdir(parents=True, exist_ok=True)
 
-    # Load persisted config overrides before anything else
     _load_config_overrides()
 
     await init_db()
@@ -31,9 +30,9 @@ async def lifespan(app: FastAPI):
 
 
 def _load_config_overrides() -> None:
-    """Apply any previously saved config overrides from data/config_overrides.json."""
     import json
     from config import settings
+
     override_file = Path(__file__).parent / "data" / "config_overrides.json"
     if not override_file.exists():
         return
@@ -43,7 +42,7 @@ def _load_config_overrides() -> None:
             if hasattr(settings, key) and val is not None:
                 setattr(settings, key, val)
     except Exception:
-        pass  # Don't crash startup on malformed override file
+        pass
 
 
 app = FastAPI(title="Memora", version="0.1.0", lifespan=lifespan)
@@ -55,7 +54,7 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
     raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
+# ── CORS - Strict allowed origins only ──────────────────────────────────────
 allowed_origins = [
     "http://localhost:5173",
     "http://localhost:3000",
@@ -71,11 +70,23 @@ if extra_origin:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.netlify\.app",
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+
+
+# ── Security Headers via middleware ───────────────────────────────────────
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
+
 
 app.include_router(chat.router)
 app.include_router(memories.router)

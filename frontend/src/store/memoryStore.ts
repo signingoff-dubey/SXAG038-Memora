@@ -23,30 +23,8 @@ export interface CustomModelConfig {
   modelName: string;
 }
 
-// ── localStorage helpers ──────────────────────────────────────────────────────
-
-const LS = {
-  get: <T>(key: string, fallback: T): T => {
-    try {
-      const v = localStorage.getItem(key);
-      if (!v) return fallback;
-      const parsed = JSON.parse(v);
-      return (parsed === null || parsed === undefined) ? fallback : (parsed as T);
-    } catch {
-      return fallback;
-    }
-  },
-  set: (key: string, value: unknown) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch {}
-  },
-  remove: (key: string) => {
-    try {
-      localStorage.removeItem(key);
-    } catch {}
-  },
-};
+// ── Encrypted localStorage helpers ───────────────────────────────────────────
+import { EncryptedLS } from '../utils/encryptedStorage';
 
 const SESSIONS_KEY    = 'memora-sessions';
 const MSGS_PREFIX     = 'memora-msgs-';
@@ -65,6 +43,7 @@ function msgsKey(sessionId: string) {
 // ── Store interface ───────────────────────────────────────────────────────────
 
 interface MemoryStore {
+  initialized: boolean;
   // Chat sessions
   sessions: ChatSession[];
   activeSessionId: string | null;
@@ -91,11 +70,13 @@ interface MemoryStore {
   memories: MemoryData[];
   isLoadingMemories: boolean;
 
-  // ── Actions ──────────────────────────────────────────────────────────────
+  // ── Actions ─────────────────────────────────────────────────────────────
+  initialize: () => Promise<void>;
+  
   // Sessions
   createSession: () => string;
-  loadSession: (id: string) => void;
-  deleteSession: (id: string) => void;
+  loadSession: (id: string) => Promise<void>;
+  deleteSession: (id: string) => Promise<void>;
   updateSessionMeta: (id: string, lastMessage: string) => void;
 
   // Messages
@@ -142,30 +123,57 @@ interface MemoryStore {
 // ── Store ─────────────────────────────────────────────────────────────────────
 
 export const useMemoryStore = create<MemoryStore>((set, get) => ({
-  sessions: LS.get<ChatSession[]>(SESSIONS_KEY, []),
+  initialized: false,
+  sessions: [],
   activeSessionId: null,
   messages: [],
 
-  selectedModel: LS.get<string>(MODEL_KEY, 'qwen2.5-coder:7b'),
-  customConfig: LS.get<CustomModelConfig | null>(CUSTOM_CFG_KEY, null),
+  selectedModel: 'qwen2.5-coder:7b',
+  customConfig: null,
   installedModels: [],
 
-  userProfile: LS.get<string>(PROFILE_KEY, ''),
+  userProfile: '',
 
-  theme: LS.get<'light' | 'dark'>(THEME_KEY, 'dark'),
-  historyOpen: LS.get<boolean>(HISTORY_KEY, true),
-  localBackendActive: LS.get<boolean>(LOCAL_BA_KEY, false),
-  isDemoMode: LS.get<boolean>(DEMO_MODE_KEY, false),
+  theme: 'dark',
+  historyOpen: true,
+  localBackendActive: false,
+  isDemoMode: false,
 
   streamingResponse: '',
 
   memories: [],
   isLoadingMemories: false,
 
+  initialize: async () => {
+    const [sessions, selectedModel, customConfig, userProfile, theme, historyOpen, localBackendActive, isDemoMode] = await Promise.all([
+      EncryptedLS.get<ChatSession[]>(SESSIONS_KEY, []),
+      EncryptedLS.get<string>(MODEL_KEY, 'qwen2.5-coder:7b'),
+      EncryptedLS.get<CustomModelConfig | null>(CUSTOM_CFG_KEY, null),
+      EncryptedLS.get<string>(PROFILE_KEY, ''),
+      EncryptedLS.get<'light' | 'dark'>(THEME_KEY, 'dark'),
+      EncryptedLS.get<boolean>(HISTORY_KEY, true),
+      EncryptedLS.get<boolean>(LOCAL_BA_KEY, false),
+      EncryptedLS.get<boolean>(DEMO_MODE_KEY, false),
+    ]);
+    
+    set({
+      initialized: true,
+      sessions,
+      selectedModel,
+      customConfig,
+      userProfile,
+      theme,
+      historyOpen,
+      localBackendActive,
+      isDemoMode,
+    });
+    
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  },
+
   // ── Sessions ─────────────────────────────────────────────────────────────
 
   createSession: () => {
-    // Fallback for non-secure contexts (HTTP) where crypto.randomUUID isn't available
     const id = typeof crypto.randomUUID === 'function' 
       ? crypto.randomUUID() 
       : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -177,26 +185,26 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
       lastMessage: '',
     };
     const sessions = [session, ...get().sessions];
-    LS.set(SESSIONS_KEY, sessions);
-    LS.set(msgsKey(id), []);
+    EncryptedLS.set(SESSIONS_KEY, sessions);
+    EncryptedLS.set(msgsKey(id), []);
     set({ sessions, activeSessionId: id, messages: [] });
     return id;
   },
 
-  loadSession: (id) => {
-    const messages = LS.get<ChatMessage[]>(msgsKey(id), []);
+  loadSession: async (id) => {
+    const messages = await EncryptedLS.get<ChatMessage[]>(msgsKey(id), []);
     set({ activeSessionId: id, messages });
   },
 
-  deleteSession: (id) => {
-    LS.remove(msgsKey(id));
+  deleteSession: async (id) => {
+    await EncryptedLS.remove(msgsKey(id));
     const sessions = get().sessions.filter((s) => s.id !== id);
-    LS.set(SESSIONS_KEY, sessions);
+    await EncryptedLS.set(SESSIONS_KEY, sessions);
     const active = get().activeSessionId;
     if (active === id) {
       const next = sessions[0];
       if (next) {
-        const messages = LS.get<ChatMessage[]>(msgsKey(next.id), []);
+        const messages = await EncryptedLS.get<ChatMessage[]>(msgsKey(next.id), []);
         set({ sessions, activeSessionId: next.id, messages });
       } else {
         set({ sessions, activeSessionId: null, messages: [] });
@@ -215,7 +223,7 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
           : s.title;
       return { ...s, title, lastMessage, lastUpdated: Date.now() };
     });
-    LS.set(SESSIONS_KEY, sessions);
+    EncryptedLS.set(SESSIONS_KEY, sessions);
     set({ sessions });
   },
 
@@ -224,7 +232,7 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     const messages = [...get().messages, full];
     const activeSessionId = get().activeSessionId;
     if (activeSessionId) {
-      LS.set(msgsKey(activeSessionId), messages);
+      EncryptedLS.set(msgsKey(activeSessionId), messages);
     }
     set({ messages });
   },
@@ -233,11 +241,10 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     const { activeSessionId, selectedModel, customConfig, addMessage, updateSessionMeta } = get();
     if (!activeSessionId) return;
 
-    // Add user message
     addMessage({ role: 'user', content, images });
     updateSessionMeta(activeSessionId, content);
 
-    set({ streamingResponse: ' ' }); // Initial space to show bubble
+    set({ streamingResponse: ' ' });
 
     const { chatApi } = await import('../api/client');
     
@@ -262,7 +269,6 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
           content: finalContent,
           memoriesUsed: done.memories_used 
         });
-        // Refresh memories after a slight delay to allow writing
         setTimeout(() => get().fetchMemories('default', activeSessionId), 1000);
       }
     );
@@ -280,12 +286,12 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   // ── Model ─────────────────────────────────────────────────────────────────
 
   setSelectedModel: (model) => {
-    LS.set(MODEL_KEY, model);
+    EncryptedLS.set(MODEL_KEY, model);
     set({ selectedModel: model });
   },
 
   setCustomConfig: (cfg) => {
-    LS.set(CUSTOM_CFG_KEY, cfg);
+    EncryptedLS.set(CUSTOM_CFG_KEY, cfg);
     set({ customConfig: cfg });
   },
 
@@ -294,18 +300,17 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
   // ── User profile ──────────────────────────────────────────────────────────
 
   setUserProfile: (profile) => {
-    LS.set(PROFILE_KEY, profile);
+    EncryptedLS.set(PROFILE_KEY, profile);
     set({ userProfile: profile });
   },
 
   // ── Danger zone ──────────────────────────────────────────────────────────
 
-  clearAllHistory: () => {
-    // Wipe every stored message list
-    get().sessions.forEach((s) => LS.remove(msgsKey(s.id)));
-    // Clear the session index
-    LS.set(SESSIONS_KEY, []);
-    // Create a fresh blank session immediately so the UI stays usable
+  clearAllHistory: async () => {
+    for (const s of get().sessions) {
+      await EncryptedLS.remove(msgsKey(s.id));
+    }
+    await EncryptedLS.set(SESSIONS_KEY, []);
     const id = typeof crypto.randomUUID === 'function' 
       ? crypto.randomUUID() 
       : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -316,8 +321,8 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
       lastUpdated: Date.now(),
       lastMessage: '',
     };
-    LS.set(SESSIONS_KEY, [fresh]);
-    LS.set(msgsKey(id), []);
+    await EncryptedLS.set(SESSIONS_KEY, [fresh]);
+    await EncryptedLS.set(msgsKey(id), []);
     set({ sessions: [fresh], activeSessionId: id, messages: [] });
   },
 
@@ -325,13 +330,13 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
 
   toggleTheme: () => {
     const next = get().theme === 'dark' ? 'light' : 'dark';
-    LS.set(THEME_KEY, next);
+    EncryptedLS.set(THEME_KEY, next);
     document.documentElement.classList.toggle('dark', next === 'dark');
     set({ theme: next });
   },
 
   setTheme: (theme) => {
-    LS.set(THEME_KEY, theme);
+    EncryptedLS.set(THEME_KEY, theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
     set({ theme });
   },
@@ -340,17 +345,17 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
 
   toggleHistory: () => {
     const next = !get().historyOpen;
-    LS.set(HISTORY_KEY, next);
+    EncryptedLS.set(HISTORY_KEY, next);
     set({ historyOpen: next });
   },
 
   setLocalBackendActive: (active) => {
-    LS.set(LOCAL_BA_KEY, active);
+    EncryptedLS.set(LOCAL_BA_KEY, active);
     set({ localBackendActive: active });
   },
 
   setDemoMode: (active) => {
-    LS.set(DEMO_MODE_KEY, active);
+    EncryptedLS.set(DEMO_MODE_KEY, active);
     set({ isDemoMode: active });
   },
 
@@ -363,16 +368,13 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
     try {
       const { memoriesApi } = await import('../api/client');
       const resp = await memoriesApi.list(userId, sessionId);
-      // Guard: backend might be unavailable and Netlify returns HTML — only accept arrays
       if (Array.isArray(resp.data)) {
-        // Only update if the session hasn't changed while the request was in flight
         const currentSession = get().activeSessionId;
         if (currentSession === (sessionId ?? null) || sessionId === undefined) {
           set({ memories: resp.data });
         }
       }
     } catch {
-      // Backend not available — keep existing memories rather than wiping them
     } finally {
       set({ isLoadingMemories: false });
     }
@@ -380,9 +382,6 @@ export const useMemoryStore = create<MemoryStore>((set, get) => ({
 
   addMemory: (memory) =>
     set((state) => {
-      // Logic for adding a memory based on session isolation:
-      // 1. If global (not session-only), always add.
-      // 2. If session-only, only add if it matches the current active session.
       if (memory.is_session_only && memory.session_id !== state.activeSessionId) {
         return state; 
       }
