@@ -448,15 +448,35 @@ class FAISSVectorStore(BaseVectorStore):
         """Load index from disk."""
         try:
             import faiss
-            import pickle
+            import json
+            import os
 
             if os.path.exists(f"{self.index_path}/index.faiss"):
                 self._index = faiss.read_index(f"{self.index_path}/index.faiss")
 
-            if os.path.exists(f"{self.index_path}/documents.pkl"):
-                with open(f"{self.index_path}/documents.pkl", "rb") as f:
-                    self._documents, self._doc_ids = pickle.load(f)
+            json_path = f"{self.index_path}/documents.json"
+            if os.path.exists(json_path):
+                with open(json_path, "r", encoding="utf-8") as f:
+                    payload = json.load(f)
+                docs = payload.get("documents", [])
+                self._documents = {}
+                self._doc_ids = []
+                for d in docs:
+                    doc = Document(
+                        id=d.get("id", ""),
+                        content=d.get("content", ""),
+                        metadata=d.get("metadata", {}),
+                        embedding=d.get("embedding"),
+                    )
+                    self._documents[doc.id] = doc
+                    self._doc_ids.append(doc.id)
+            elif os.path.exists(f"{self.index_path}/documents.pkl"):
+                import pickle
 
+                with open(f"{self.index_path}/documents.pkl", "rb") as f:
+                    loaded = pickle.load(f)
+                if isinstance(loaded, tuple) and len(loaded) == 2:
+                    self._documents, self._doc_ids = loaded
             return True
         except Exception as e:
             logger.error(f"Failed to load index: {e}")
