@@ -88,6 +88,13 @@ start "Memora Backend" cmd /k "cd /d "%~dp0backend" && python -m uvicorn main:ap
 timeout /t 2 /nobreak >nul
 
 echo Starting Frontend...
+netstat -ano | findstr :5173 >nul 2>&1
+if not errorlevel 1 (
+    echo [WARNING] Port 5173 is already in use! 
+    echo           Vite will likely start on 5174 or higher.
+    echo           Please check the 'Memora Frontend' window for the correct URL.
+    timeout /t 5
+)
 start "Memora Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
 echo Opening browsers...

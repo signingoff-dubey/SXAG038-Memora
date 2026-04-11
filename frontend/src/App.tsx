@@ -38,17 +38,6 @@ function App() {
     initialize().then(() => setIsLoading(false));
   }, [initialize]);
 
-  if (isLoading || !initialized) {
-    return (
-      <div className="h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
-        <div className="flex flex-col items-center gap-3">
-          <Brain size={32} style={{ color: 'var(--accent)' }} className="animate-pulse" />
-          <span style={{ color: 'var(--text-muted)' }}>Loading encrypted storage...</span>
-        </div>
-      </div>
-    );
-  }
-
   // Apply theme class
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -108,6 +97,17 @@ function App() {
   }, [setLocalBackendActive]);
 
   useWebSocket();
+
+  if (isLoading || !initialized) {
+    return (
+      <div className="h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+        <div className="flex flex-col items-center gap-3">
+          <Brain size={32} style={{ color: 'var(--accent)' }} className="animate-pulse" />
+          <span style={{ color: 'var(--text-muted)' }}>Loading encrypted storage...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

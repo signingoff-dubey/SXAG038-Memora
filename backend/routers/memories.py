@@ -62,7 +62,7 @@ async def list_memories(
             mem.decay_score = math.exp(-mem.lambda_rate * days)
     await db.commit()
 
-    return memories
+    return [m.to_dict() for m in memories]
 
 
 # ── Merge must come BEFORE /{memory_id} to avoid route collision ──────────────
@@ -109,7 +109,7 @@ async def merge_memories(
 
     await manager.broadcast("memory_deleted", {"id": mem_b.id})
     await manager.broadcast("memory_updated", mem_a.to_dict())
-    return mem_a
+    return mem_a.to_dict()
 
 
 @router.get("/{memory_id}", response_model=MemoryResponse)
@@ -121,7 +121,7 @@ async def get_memory(
     memory = result.scalar_one_or_none()
     if not memory:
         raise HTTPException(status_code=404, detail="Memory not found")
-    return memory
+    return memory.to_dict()
 
 
 @router.patch("/{memory_id}", response_model=MemoryResponse)
@@ -181,7 +181,7 @@ async def update_memory(
         vector_store.update_memory_metadata(memory.id, current_metadata)
 
     await manager.broadcast("memory_updated", memory.to_dict())
-    return memory
+    return memory.to_dict()
 
 
 @router.delete("/{memory_id}")

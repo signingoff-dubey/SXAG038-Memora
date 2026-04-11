@@ -1,4 +1,4 @@
-# Memora v5.1 — Real-time Context-Aware AI with Persistent Memory
+# Memora v5.5 — Real-time Context-Aware AI with Persistent Memory
 
 Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
@@ -6,7 +6,15 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 
 ## Release Notes
 
-### v5.1 (latest)
+### v5.5 (latest)
+#### 🛠️ Stability Patch: React Hook Lifecycle + Data Serialization
+
+- **Hook Order Fix** — resolved a critical React crash ("black screen") in `App.tsx` by ensuring all hooks are called consistently before early returns.
+- **Backend Serialization** — updated memory retrieval routes to return ISO-formatted strings for dates, preventing `ResponseValidationError` on the backend.
+- **Vite Port Expansion** — backend now supports alternative Vite ports (5174, 5175, 5176) in CORS origins, preventing connectivity blocks.
+- **Startup Intelligence** — `run.bat` now detects port collisions and warns the user if 5173 is occupied.
+
+### v5.1
 #### 🔐 Local Storage Encryption + Security Hardening
 
 - **Encrypted localStorage** — all chat sessions and messages are now encrypted with AES-256-GCM before storing in localStorage. Other applications cannot read your data.
