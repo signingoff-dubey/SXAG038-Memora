@@ -2,6 +2,7 @@
 
 Cortex is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
+Link : https://cortex-kabir.netlify.app
 ---
 
 ## Release Notes
