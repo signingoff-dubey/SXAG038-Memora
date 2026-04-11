@@ -18,7 +18,7 @@ def get_collection() -> chromadb.Collection:
     if _collection is None:
         client = get_client()
         _collection = client.get_or_create_collection(
-            name="memora_memories",
+            name="cortex_memories",
             metadata={"hnsw:space": "cosine"},
         )
     return _collection

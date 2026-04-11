@@ -45,7 +45,12 @@ def _load_config_overrides() -> None:
         pass
 
 
-app = FastAPI(title="Memora", version="0.1.0", lifespan=lifespan)
+app = FastAPI(
+    title="Cortex AI API",
+    description="Context-Aware AI Agent with Persistent Memory",
+    version="5.5.0",
+    lifespan=lifespan
+)
 app.state.limiter = limiter
 
 
@@ -66,7 +71,7 @@ allowed_origins = [
     "http://127.0.0.1:5175",
     "http://127.0.0.1:5176",
     "http://127.0.0.1:3000",
-    "https://memora-kabir.netlify.app",
+    "https://cortex-kabir.netlify.app",
 ]
 
 extra_origin = os.getenv("ALLOWED_ORIGIN")

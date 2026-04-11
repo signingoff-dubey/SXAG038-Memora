@@ -52,7 +52,7 @@ export function ChatWindow() {
             <div className="nm-card p-5 rounded-3xl">
               <Brain size={44} style={{ color: 'var(--accent)' }} />
             </div>
-            <p className="text-xl font-bold">Memora</p>
+            <p className="text-xl font-bold">Cortex</p>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
               Start a conversation. I'll remember what matters.
             </p>

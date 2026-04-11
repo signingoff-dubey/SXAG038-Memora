@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo ========================================
-echo Starting Memora Application
+echo Starting Cortex Application
 echo ========================================
 
 REM Check if backend folder exists
@@ -83,7 +83,7 @@ if not errorlevel 1 (
 )
 
 echo Starting Backend...
-start "Memora Backend" cmd /k "cd /d "%~dp0backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload"
+start "Cortex Backend" cmd /k "cd /d "%~dp0backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload"
 
 timeout /t 2 /nobreak >nul
 
@@ -92,10 +92,10 @@ netstat -ano | findstr :5173 >nul 2>&1
 if not errorlevel 1 (
     echo [WARNING] Port 5173 is already in use! 
     echo           Vite will likely start on 5174 or higher.
-    echo           Please check the 'Memora Frontend' window for the correct URL.
+    echo           Please check the 'Cortex Frontend' window for the correct URL.
     timeout /t 5
 )
-start "Memora Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+start "Cortex Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
 echo Opening browsers...
 timeout /t 5 /nobreak >nul

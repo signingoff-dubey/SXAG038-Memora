@@ -1,4 +1,4 @@
-const ENCRYPTION_KEY_ID = 'memora-encryption-key';
+const ENCRYPTION_KEY_ID = 'cortex-encryption-key';
 
 async function getOrCreateKey(): Promise<CryptoKey> {
   const existingKey = sessionStorage.getItem(ENCRYPTION_KEY_ID);

@@ -40,7 +40,7 @@ export const DEMO_MEMORIES: MemoryData[] = [
   },
   {
     id: 'demo-13', user_id: 'default', session_id: null,
-    content: "Alex is building a memory-aware AI assistant called Memora as a side project",
+    content: "Alex is building a memory-aware AI assistant called Cortex as a side project",
     importance: 8.0, decay_score: 0.96, lambda_rate: 0.05,
     is_pinned: false, is_flagged_unimportant: false, is_session_only: false,
     contradiction_with: [], access_count: 7,
@@ -123,7 +123,7 @@ export const DEMO_MEMORIES: MemoryData[] = [
   // ── Session-only ──────────────────────────────────────────────────────────
   {
     id: 'demo-14', user_id: 'default', session_id: 'demo-session',
-    content: 'Currently debugging a React useEffect infinite loop in the Memora frontend',
+    content: 'Currently debugging a React useEffect infinite loop in the Cortex frontend',
     importance: 2.0, decay_score: 0.6, lambda_rate: 0.5,
     is_pinned: false, is_flagged_unimportant: false, is_session_only: true,
     contradiction_with: [], access_count: 1,
@@ -150,7 +150,7 @@ export const DEMO_MESSAGES: ChatMessage[] = [
   {
     role: 'assistant',
     content:
-      "Hi Alex! Infinite loops in hooks are almost always a **useEffect dependency array** issue.\n\nSince you're building Memora in React + TypeScript, I'm guessing this is in one of your frontend components?\n\nShare the code and I'll take a look 🔍",
+      "Hi Alex! Infinite loops in hooks are almost always a **useEffect dependency array** issue.\n\nSince you're building Cortex in React + TypeScript, I'm guessing this is in one of your frontend components?\n\nShare the code and I'll take a look 🔍",
     memoriesUsed: ['demo-1', 'demo-2', 'demo-13'],
     timestamp: Date.now() - 3_790_000,
   },

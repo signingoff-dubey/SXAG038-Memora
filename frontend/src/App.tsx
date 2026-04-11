@@ -145,7 +145,7 @@ function App() {
               className="font-extrabold text-base tracking-tight"
               style={{ color: 'var(--text-primary)' }}
             >
-              Memora
+              Cortex
             </span>
             <span
               className="text-[9px] px-1.5 py-0.5 rounded-md font-bold tracking-wider"

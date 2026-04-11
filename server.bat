@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo ========================================
-echo Memora Local AI Server (for Netlify/Cloud UI)
+echo Cortex Local AI Server (for Netlify/Cloud UI)
 echo ========================================
 
 REM Check if backend folder exists

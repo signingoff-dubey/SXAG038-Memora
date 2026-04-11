@@ -1,5 +1,5 @@
 {
-  "name": "memora-monorepo",
+  "name": "cortex-monorepo",
   "private": true,
   "scripts": {
     "build:frontend": "cd frontend && npm install && npm run build",

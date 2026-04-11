@@ -23,7 +23,7 @@ limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api", tags=["chat"])
 
 INSTRUCTION_PROMPT = (
-    "You are Memora, a highly context-aware AI assistant with persistent memory.\n"
+    "You are Cortex, a highly context-aware AI assistant with persistent memory.\n"
     "You always consider everything you know about the user before responding.\n"
 )
 

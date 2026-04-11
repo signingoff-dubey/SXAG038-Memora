@@ -18,7 +18,7 @@ export function useWebSocket(userId: string = 'default') {
   const connect = useCallback(() => {
     if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
 
-    const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+    const isLocal = localStorage.getItem('cortex-local-backend') === 'true';
     let wsUrl: string;
 
     if (isLocal) {

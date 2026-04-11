@@ -6,7 +6,7 @@ const api = axios.create({
 
 // Interceptor to switch to localhost if "localBackendActive" is found in localStorage
 api.interceptors.request.use((config) => {
-  const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+  const isLocal = localStorage.getItem('cortex-local-backend') === 'true';
   const prodUrl = (import.meta as any).env.VITE_API_URL || '/api';
   
   if (isLocal) {
@@ -71,7 +71,7 @@ export interface OllamaModel {
 export const chatApi = {
   send: (data: ChatRequest) => api.post<ChatResponse>('/chat', data),
   stream: (data: ChatRequest, onToken: (token: string) => void, onDone: (metadata: any) => void) => {
-    const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+    const isLocal = localStorage.getItem('cortex-local-backend') === 'true';
     const baseUrl = isLocal ? 'http://127.0.0.1:8000/api' : ((import.meta as any).env.VITE_API_URL || '/api');
     
     return fetch(`${baseUrl}/chat`, {
@@ -106,7 +106,7 @@ export const chatApi = {
     });
   },
   export: async (sessionId: string, userId = 'default') => {
-    const isLocal = localStorage.getItem('memora-local-backend') === 'true';
+    const isLocal = localStorage.getItem('cortex-local-backend') === 'true';
     const baseUrl = isLocal ? 'http://127.0.0.1:8000/api' : ((import.meta as any).env.VITE_API_URL || '/api');
     const url = `${baseUrl}/chat/export?session_id=${sessionId}&user_id=${userId}`;
     window.open(url, '_blank');

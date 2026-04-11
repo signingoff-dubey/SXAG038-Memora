@@ -1,8 +1,8 @@
-# Memora: Context-Aware AI Agent with Persistent Memory
+# Cortex: Context-Aware AI Agent with Persistent Memory
 
 ## Project Overview
 
-Memora is an innovative AI agent that maintains persistent, evolving memory across sessions. Unlike traditional chatbot frameworks that treat memory as simple storage, Memora implements a sophisticated belief system that tracks what the agent knows, how confident it is, when knowledge was acquired, and whether conflicting information exists.
+Cortex is an innovative AI agent that maintains persistent, evolving memory across sessions. Unlike traditional chatbot frameworks that treat memory as simple storage, Cortex implements a sophisticated belief system that tracks what the agent knows, how confident it is, when knowledge was acquired, and whether conflicting information exists.
 
 ---
 
@@ -95,4 +95,4 @@ Real-time sidebar showing importance scores, decay visualization, and conflict b
 
 ## Conclusion
 
-Memora represents a significant step forward in AI memory architecture. By implementing a belief system rather than simple storage, it brings AI assistants closer to human-like memory retention and reasoning. This project demonstrates advanced understanding of memory psychology, semantic processing, and real-time systems.
+Cortex represents a significant step forward in AI memory architecture. By implementing a belief system rather than simple storage, it brings AI assistants closer to human-like memory retention and reasoning. This project demonstrates advanced understanding of memory psychology, semantic processing, and real-time systems.

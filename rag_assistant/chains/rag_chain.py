@@ -1,7 +1,7 @@
 """
-Memora RAG Pipeline
+Cortex RAG Pipeline
 ===================
-Retrieval-Augmented Generation pipeline wired to Memora's live memory store.
+Retrieval-Augmented Generation pipeline wired to Cortex's live memory store.
 
 Responsibilities:
   1. Embed user query with the same all-MiniLM-L6-v2 model used by the backend.
@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MemoraRAGQuery:
-    """Input to the Memora RAG pipeline."""
+class CortexRAGQuery:
+    """Input to the Cortex RAG pipeline."""
     question: str
     user_id: str = "default"
     session_id: Optional[str] = None
@@ -42,8 +42,8 @@ class MemoraRAGQuery:
 
 
 @dataclass
-class MemoraRAGResponse:
-    """Output from the Memora RAG pipeline."""
+class CortexRAGResponse:
+    """Output from the Cortex RAG pipeline."""
     answer: str
     sources: list[dict] = field(default_factory=list)
     verified: bool = False          # True  → passed or corrected by verifier
@@ -52,18 +52,18 @@ class MemoraRAGResponse:
     metadata: dict = field(default_factory=dict)
 
 
-class MemoraRAGPipeline:
+class CortexRAGPipeline:
     """
-    RAG pipeline backed by Memora's existing services.
+    RAG pipeline backed by Cortex's existing services.
 
     Uses:
       - backend.services.embeddings  → all-MiniLM-L6-v2
-      - backend.services.vector_store → ChromaDB (memora_memories collection)
+      - backend.services.vector_store → ChromaDB (cortex_memories collection)
       - backend.services.llm          → Ollama / OpenAI-compatible
     """
 
     SYSTEM_PROMPT = (
-        "You are Memora, a highly context-aware AI assistant with persistent memory.\n"
+        "You are Cortex, a highly context-aware AI assistant with persistent memory.\n"
         "You always refer to what you know about the user before answering.\n"
         "Be concise, warm, and personally relevant.\n"
     )
@@ -92,7 +92,7 @@ class MemoraRAGPipeline:
 
     # ── Public API ────────────────────────────────────────────────────────────
 
-    async def query(self, rag_query: MemoraRAGQuery) -> MemoraRAGResponse:
+    async def query(self, rag_query: CortexRAGQuery) -> CortexRAGResponse:
         """Full RAG pipeline: retrieve → generate → verify."""
         import uuid
         session_id = rag_query.session_id or str(uuid.uuid4())
@@ -152,7 +152,7 @@ class MemoraRAGPipeline:
                 correction_applied = True
                 logger.info("RAG verifier rewrote the response.")
 
-        return MemoraRAGResponse(
+        return CortexRAGResponse(
             answer=answer,
             sources=sources,
             verified=verified,
@@ -216,16 +216,16 @@ class MemoraRAGPipeline:
 
 # ── Convenience factory ───────────────────────────────────────────────────────
 
-_pipeline: Optional[MemoraRAGPipeline] = None
+_pipeline: Optional[CortexRAGPipeline] = None
 
 
 def get_rag_pipeline(
     model: Optional[str] = None,
     custom_base_url: Optional[str] = None,
     custom_api_key: Optional[str] = None,
-) -> MemoraRAGPipeline:
-    """Return a (cached) MemoraRAGPipeline instance."""
+) -> CortexRAGPipeline:
+    """Return a (cached) CortexRAGPipeline instance."""
     global _pipeline
     if _pipeline is None or model or custom_base_url:
-        _pipeline = MemoraRAGPipeline(model, custom_base_url, custom_api_key)
+        _pipeline = CortexRAGPipeline(model, custom_base_url, custom_api_key)
     return _pipeline

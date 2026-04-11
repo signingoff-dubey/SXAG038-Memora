@@ -384,7 +384,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               </label>
             </div>
             <p className="text-xs mb-3 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Tell Memora about yourself — your name, profession, interests, preferences, or anything
+              Tell Cortex about yourself — your name, profession, interests, preferences, or anything
               you want the AI to always keep in mind. This is saved to{' '}
               <code
                 className="px-1 py-0.5 rounded text-[11px]"
@@ -400,7 +400,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               rows={7}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={`e.g. My name is Kabir. I'm a software developer who loves building AI tools. I prefer concise, technical answers. I'm currently working on a memory-aware AI assistant called Memora...`}
+              placeholder={`e.g. My name is Kabir. I'm a software developer who loves building AI tools. I prefer concise, technical answers. I'm currently working on a memory-aware AI assistant called Cortex...`}
               className="w-full px-4 py-3 rounded-2xl text-sm nm-input resize-none transition-all leading-relaxed"
               style={{ color: 'var(--text-primary)' }}
             />
@@ -438,7 +438,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             <strong style={{ color: 'var(--accent)' }}>How context works:</strong>
             {' '}Your profile is combined with retrieved memories into a system prompt before every reply.
             Memories are auto-extracted from your conversations and stored in the vector database.
-            Together they make Memora genuinely context-aware.
+            Together they make Cortex genuinely context-aware.
           </div>
 
           {/* Danger zone */}

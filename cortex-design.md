@@ -1,4 +1,4 @@
-# Memora — Design Specification
+# Cortex — Design Specification
 
 An AI agent with a persistent, evolving belief system. Not a database — a memory architecture with semantic deduplication, contradiction detection, Ebbinghaus decay, and user-controlled memory curation.
 
@@ -124,7 +124,7 @@ FastAPI (single process)
 | started_at | DATETIME | Session start |
 | ended_at | DATETIME | Session end (nullable) |
 
-### ChromaDB collection: `memora_memories`
+### ChromaDB collection: `cortex_memories`
 
 Each document stored with:
 - **id**: matches SQLite memory UUID
@@ -247,7 +247,7 @@ Zustand store with:
 ## File Structure
 
 ```
-memora/
+cortex/
   backend/
     main.py              # FastAPI app, lifespan events, CORS
     config.py            # Settings via pydantic-settings

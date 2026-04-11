@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     ollama_model: str = "qwen2.5-coder:7b"
     embedding_model: str = "all-MiniLM-L6-v2"
     nli_model: str = "cross-encoder/nli-deberta-v3-small"
-    database_url: str = "sqlite+aiosqlite:///./memora.db"
+    database_url: str = "sqlite+aiosqlite:///./cortex.db"
     chroma_persist_dir: str = "./chroma_data"
 
     dedup_threshold: float = 0.92

@@ -1,6 +1,6 @@
 # ☁️ Cloud Sync Guide: Local Models in the Cloud
 
-When you deploy Memora to **Netlify** (Frontend) and a provider like **Railway** (Backend), the cloud servers cannot "see" your home computer's `localhost:11434` where Ollama runs. 
+When you deploy Cortex to **Netlify** (Frontend) and a provider like **Railway** (Backend), the cloud servers cannot "see" your home computer's `localhost:11434` where Ollama runs. 
 
 To bridge this gap, you must create a **tunnel** that gives your local machine a public URL.
 
@@ -46,12 +46,12 @@ By default, Ollama blocks requests from unknown origins. You need to allow your 
 
 ---
 
-## ✅ Step 4: Verify in Memora
+## ✅ Step 4: Verify in Cortex
 
 1.  Go to your Netlify site.
 2.  Open **Settings** → **Connectivity**.
 3.  Click **"Check Connection"**.
-4.  If successful, Memora will now use your local GPU for all cloud-hosted conversations!
+4.  If successful, Cortex will now use your local GPU for all cloud-hosted conversations!
 
 ---
 

@@ -26,15 +26,15 @@ export interface CustomModelConfig {
 // ── Encrypted localStorage helpers ───────────────────────────────────────────
 import { EncryptedLS } from '../utils/encryptedStorage';
 
-const SESSIONS_KEY    = 'memora-sessions';
-const MSGS_PREFIX     = 'memora-msgs-';
-const MODEL_KEY       = 'memora-model';
-const CUSTOM_CFG_KEY  = 'memora-custom-cfg';
-const THEME_KEY       = 'memora-theme';
-const HISTORY_KEY     = 'memora-history-open';
-const PROFILE_KEY     = 'memora-user-profile';
-const LOCAL_BA_KEY    = 'memora-local-backend';
-const DEMO_MODE_KEY   = 'memora-demo-mode';
+const SESSIONS_KEY    = 'cortex-sessions';
+const MSGS_PREFIX     = 'cortex-msgs-';
+const MODEL_KEY       = 'cortex-model';
+const CUSTOM_CFG_KEY  = 'cortex-custom-cfg';
+const THEME_KEY       = 'cortex-theme';
+const HISTORY_KEY     = 'cortex-history-open';
+const PROFILE_KEY     = 'cortex-user-profile';
+const LOCAL_BA_KEY    = 'cortex-local-backend';
+const DEMO_MODE_KEY   = 'cortex-demo-mode';
 
 function msgsKey(sessionId: string) {
   return MSGS_PREFIX + sessionId;

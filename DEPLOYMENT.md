@@ -1,6 +1,6 @@
-# Deployment Guide - Memora
+# Deployment Guide - Cortex
 
-This document explains how to host Memora in the cloud. Because the project consists of a **Python Backend** and a **React Frontend**, you must use two different strategies for deployment.
+This document explains how to host Cortex in the cloud. Because the project consists of a **Python Backend** and a **React Frontend**, you must use two different strategies for deployment.
 
 ---
 
@@ -15,7 +15,7 @@ The changes in this repository allow Netlify to automatically build and host you
     *   **Publish directory**: `frontend/dist`
 3.  **Environment Variables**:
     *   Go to **Site settings > Environment variables**.
-    *   Add `VITE_API_URL` and set it to your hosted backend URL (e.g., `https://memora-backend.railway.app`).
+    *   Add `VITE_API_URL` and set it to your hosted backend URL (e.g., `https://cortex-backend.railway.app`).
 
 ---
 
@@ -41,4 +41,4 @@ Once both are deployed:
 2.  Paste it into the `VITE_API_URL` environment variable on **Netlify**.
 3.  Re-deploy the Netlify site.
 
-Your Memora instance is now live!
+Your Cortex instance is now live!

@@ -1,6 +1,6 @@
-# Memora v5.5 — Real-time Context-Aware AI with Persistent Memory
+# Cortex v5.5 — Real-time Context-Aware AI with Persistent Memory
 
-Memora is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
+Cortex is an AI agent with a persistent, evolving belief system. Not a database — a memory architecture that tracks what the agent believes, how confident it is, when that belief was formed, and whether two beliefs conflict.
 
 ---
 
@@ -59,7 +59,7 @@ Memora is an AI agent with a persistent, evolving belief system. Not a database 
 You can use the hosted interface while keeping your data and AI processing on your local machine:
 
 1. **Launch Brain**: Run [**server.bat**](server.bat) on your computer.
-2. **Access UI**: Visit [**memora-kabir.netlify.app**](https://memora-kabir.netlify.app).
+2. **Access UI**: Visit [**cortex-kabir.netlify.app**](https://cortex-kabir.netlify.app).
 3. **Enable Local Backend**: In Settings, toggle "Local Backend" on. The green 🟢 badge confirms the connection.
 
 - One-click startup: `run.bat` starts Ollama, Backend, and Frontend and opens browser tabs automatically.
@@ -146,7 +146,7 @@ You can use the hosted interface while keeping your data and AI processing on yo
 ## File Structure
 
 ```
-memora/
+cortex/
 ├── backend/
 │   ├── main.py                   # FastAPI app, lifespan, CORS
 │   ├── config.py                 # pydantic-settings env config
@@ -181,7 +181,7 @@ memora/
 ├── rag_assistant/
 │   ├── llm_config.py             # LLM client config for the RAG pipeline
 │   ├── chains/
-│   │   └── rag_chain.py          # MemoraRAGPipeline — reusable RAG class
+│   │   └── rag_chain.py          # CortexRAGPipeline — reusable RAG class
 │   ├── embeddings/
 │   │   └── embedding_service.py  # embedding wrapper used by the RAG pipeline
 │   ├── memory/
@@ -466,14 +466,14 @@ Click the **`+`** button in the chat input to attach images.
 
 ## RAG Pipeline (`rag_assistant/`)
 
-The `MemoraRAGPipeline` class in `rag_assistant/chains/rag_chain.py` provides a standalone, reusable RAG interface backed by Memora's own services:
+The `CortexRAGPipeline` class in `rag_assistant/chains/rag_chain.py` provides a standalone, reusable RAG interface backed by Cortex's own services:
 
 ```python
-from rag_assistant.chains.rag_chain import get_rag_pipeline, MemoraRAGQuery
+from rag_assistant.chains.rag_chain import get_rag_pipeline, CortexRAGQuery
 
 pipeline = get_rag_pipeline(model="qwen2.5-coder:7b")
 
-result = await pipeline.query(MemoraRAGQuery(
+result = await pipeline.query(CortexRAGQuery(
     question="What programming languages does the user know?",
     user_id="default",
     top_k=5,
@@ -511,7 +511,7 @@ Override any via environment variables or a `.env` file in `backend/`.
 
 1. **Set your profile** — open Settings (⚙), fill "Who am I?", save. Every response is now personalised without re-explaining yourself.
 
-2. **Cross-session memory** — tell Memora something ("I'm learning Rust"), close the tab, reopen in a new session. It still knows.
+2. **Cross-session memory** — tell Cortex something ("I'm learning Rust"), close the tab, reopen in a new session. It still knows.
 
 3. **Session isolation** — open two sessions. A session-only memory from session A (e.g. "help me sort a list") is never visible in session B.
 

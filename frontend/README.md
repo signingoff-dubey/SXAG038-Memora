@@ -1,6 +1,6 @@
-# Memora — Frontend
+# Cortex — Frontend
 
-This is the Vite + React + TypeScript frontend for Memora.
+This is the Vite + React + TypeScript frontend for Cortex.
 
 See the [project README](../README.md) for full setup instructions, feature list, and API reference.
 
